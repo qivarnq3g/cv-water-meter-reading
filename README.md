@@ -18,7 +18,9 @@ Hạn nộp trên Moodle: 03:00 thứ Sáu 04/12/2026. Hạn của từng việc
 
 | Thư mục | Nội dung |
 |---|---|
-| `src/` | Mã nguồn dùng chung: đọc dữ liệu, phương pháp đối chứng (baseline), phương pháp đề xuất, thước đo |
+| `src/wmr/` | Mã nguồn dùng chung: đọc dữ liệu (`dataset.py`), phương pháp đối chứng (`baseline.py`), thước đo (`metrics.py`), sau này thêm phương pháp đề xuất |
+| `tests/` | Kiểm thử tự động cho `src/wmr/` |
+| `docs/` | Tài liệu giải thích mã nguồn |
 | `experiments/` | Script tái tạo bốn thí nghiệm bắt buộc E1 đến E4 và tệp mô tả phân tầng tập đánh giá |
 | `notebooks/` | Notebook ghi nhận quá trình thực nghiệm |
 | `report/` | Báo cáo và slide thuyết trình |
@@ -30,9 +32,50 @@ Hạn nộp trên Moodle: 03:00 thứ Sáu 04/12/2026. Hạn của từng việc
 python -m venv .venv
 .venv\Scripts\activate
 pip install -r requirements.txt
+pip install -e .
 ```
 
-Sau đó tải dữ liệu theo `data/README.md`.
+Đã thử với Python 3.11.9. Sau đó tải dữ liệu theo `data/README.md`. Nếu dữ liệu nằm ở thư mục khác, đặt biến môi trường `WMR_DATA_ROOT` trỏ tới thư mục chứa `Word-Wheel_Water_Meter_Dataset`, hoặc truyền `--data-root` cho từng script.
+
+## Tập phát triển và tập đánh giá
+
+Chỉ dùng phần đồng hồ năm chữ số. Tập đánh giá là tập test gốc của bộ dữ liệu, tập phát triển là tập train gốc, chia tiếp thành hai phần theo mã băm của tên ảnh nên lần chạy nào cũng ra cùng kết quả. Danh sách ảnh nằm trong `experiments/splits/`.
+
+| Tập | Tệp | Số ảnh | Trong đó chữ số cuối đang lăn (half-word) |
+|---|---|---|---|
+| Phát triển, phần dựng mẫu | `dev_fit.csv` | 9.577 | 3.399 |
+| Phát triển, phần chọn tham số | `dev_val.csv` | 2.290 | 836 |
+| Đánh giá | `eval.csv` | 2.000 | 355 |
+
+Tạo lại danh sách:
+
+```
+python experiments/make_splits.py
+```
+
+## Baseline so khớp mẫu
+
+Mẫu của mỗi chữ số là ảnh trung bình các ô số ở bốn vị trí đầu, lấy từ ảnh không gắn cờ half-word của `dev_fit`. Khi đọc, ảnh được cân bằng histogram, chia đều thành năm ô, mỗi ô so với mười mẫu bằng tương quan chéo chuẩn hóa trong phạm vi lệch 6 điểm ảnh, chọn mẫu có điểm cao nhất. Giải thích mã nguồn từng dòng: `docs/baseline-walkthrough.md`.
+
+```
+python experiments/run_baseline.py
+```
+
+Lệnh in bảng dưới đây và ghi kết quả từng ảnh vào `outputs/baseline_eval.csv`. Độ chính xác trên tập đánh giá, đo ngày 10/11/2026:
+
+| Nhóm ảnh | Số ảnh | Số 1 | Số 2 | Số 3 | Số 4 | Số 5 | Cả chỉ số |
+|---|---|---|---|---|---|---|---|
+| Tất cả | 2.000 | 0,964 | 0,908 | 0,871 | 0,854 | 0,482 | 0,371 |
+| Không half-word | 1.645 | 0,962 | 0,908 | 0,866 | 0,851 | 0,559 | 0,431 |
+| Half-word | 355 | 0,972 | 0,907 | 0,893 | 0,865 | 0,127 | 0,096 |
+
+Bốn chữ số đầu gần như không đổi giữa hai nhóm, còn chữ số cuối tụt từ 0,559 xuống 0,127 ở ảnh half-word. Hai nhóm này mới chia theo cờ có sẵn trong nhãn, chưa phải phân tầng theo cường độ mà đề yêu cầu.
+
+## Kiểm thử
+
+```
+python -m pytest
+```
 
 ## Cách làm việc
 
