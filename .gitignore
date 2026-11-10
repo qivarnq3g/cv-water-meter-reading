@@ -15,3 +15,5 @@ CLAUDE.md
 .claude/
 .codex/
 docs/knowledge/
+*.egg-info/
+.pytest_cache/
