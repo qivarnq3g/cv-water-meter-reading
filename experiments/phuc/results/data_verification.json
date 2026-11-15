@@ -1,0 +1,20 @@
+{
+  "zip_sha256": "3b7d3d8168ab924314a7c71987ce09f54dec95818a9cb484b46ea804fc1d90e6",
+  "splits": {
+    "dev_fit": {
+      "images": 9577,
+      "half_word": 3399,
+      "missing": 0
+    },
+    "dev_val": {
+      "images": 2290,
+      "half_word": 836,
+      "missing": 0
+    },
+    "eval": {
+      "images": 2000,
+      "half_word": 355,
+      "missing": 0
+    }
+  }
+}

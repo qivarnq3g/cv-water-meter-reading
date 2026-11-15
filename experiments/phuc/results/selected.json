@@ -1,0 +1,15 @@
+{
+  "config": {
+    "pitch": 58,
+    "threshold": 0.4,
+    "max_shift": 6,
+    "enabled": true
+  },
+  "selection_split": "dev_val",
+  "criterion": "last_accuracy",
+  "split_sha256": {
+    "dev_val.csv": "c5d5cc6bc5359acf61209be443d055a3adad7b2d1249ac6e8ce5dbfd7bb71669",
+    "dev_fit.csv": "a401b1cc8d1d2111f33bfdc5b3299de000e958b82e1c391b7e55c4e382c72d3e",
+    "eval.csv": "e7b25539d994cdb979376e8623edf49f24c3ba6b57159a09a6642108123700d9"
+  }
+}

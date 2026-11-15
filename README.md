@@ -94,4 +94,4 @@ python -m pytest
 
 ## Nhánh thực nghiệm của Phúc
 
-Pipeline E1/E2 và phương pháp dải bánh xe: xem `experiments/phuc/README.md`. Notebook: `notebooks/phuc_experiments.ipynb`. Chưa có kết quả mới trên ảnh thật; cần tải dữ liệu và chạy tune trước evaluate.
+Pipeline E1/E2 và phương pháp dải bánh xe: xem `experiments/phuc/README.md`. Notebook: `notebooks/phuc_experiments.ipynb`. Đã chạy trên dữ liệu thật; xem `report/phuc-results.md` và `experiments/phuc/results/`.
