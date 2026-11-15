@@ -91,3 +91,7 @@ python -m pytest
 - Tham số chọn trên tập phát triển, không tinh chỉnh trên tập đánh giá.
 - Hàm hoặc mô hình dựng sẵn chỉ dùng làm tiện ích hoặc baseline, không dùng làm thành phần xử lý thách thức.
 - Mọi nguồn tham khảo trích dẫn theo chuẩn IEEE.
+
+## Nhánh thực nghiệm của Phúc
+
+Pipeline E1/E2 và phương pháp dải bánh xe: xem `experiments/phuc/README.md`. Notebook: `notebooks/phuc_experiments.ipynb`. Chưa có kết quả mới trên ảnh thật; cần tải dữ liệu và chạy tune trước evaluate.
