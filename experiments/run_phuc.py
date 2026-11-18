@@ -1,4 +1,3 @@
-"""E1/E2 and frozen-config evaluation. Parameters are selected on dev_val only."""
 import argparse
 import csv
 import hashlib
@@ -24,7 +23,7 @@ def write_csv(path, rows):
         w = csv.DictWriter(f, fieldnames=fields); w.writeheader(); w.writerows(rows)
 
 def main():
-    ap=argparse.ArgumentParser(description=__doc__)
+    ap=argparse.ArgumentParser(description='E1/E2 tuning on dev_val and frozen-config evaluation on eval.')
     ap.add_argument('--data-root', type=Path, default=default_data_root())
     ap.add_argument('--output-dir', type=Path, default=Path('experiments/phuc/results'))
     ap.add_argument('--stage', choices=['tune','evaluate'], required=True)
@@ -36,7 +35,6 @@ def main():
         images=[load_image(args.data_root,s) for s in samples]
         trials=[]
         tiers=np.array([roll_tier(last_digit_roll(im)) for im in images])
-        # Search each main parameter at >=3 values; fixed before seeing eval.
         for pitch,shift in itertools.product((54,58,62),(2,6,10)):
             reader=WheelReader(templates,WheelConfig(pitch=pitch,max_shift=shift))
             phases=np.array([reader.phase(im)[0] for im in images])
@@ -54,7 +52,6 @@ def main():
         fingerprints={p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in Path('experiments/splits').glob('*.csv')}
         (out/'selected.json').write_text(json.dumps(dict(config=asdict(config),selection_split='dev_val',criterion='last_accuracy',split_sha256=fingerprints),indent=2))
         np.save(out/'templates.npy',templates)
-        # Intermediate images: raw, equalized, five cells, best-phase template.
         fig,axes=plt.subplots(3,4,figsize=(12,6))
         for row,idx in enumerate((0,len(images)//2,len(images)-1)):
             im=images[idx]; reader=WheelReader(templates,config); phase,_=reader.phase(im)

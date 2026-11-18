@@ -1,4 +1,3 @@
-"""Shared reporting with explicit empty groups and image-level nuisance proxies."""
 import cv2
 import numpy as np
 from .metrics import position_accuracy, reading_accuracy

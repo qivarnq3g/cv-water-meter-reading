@@ -1,4 +1,3 @@
-"""Periodic wheel NCC; only the last digit differs from the baseline."""
 from dataclasses import dataclass
 import cv2
 import numpy as np
@@ -16,11 +15,6 @@ class WheelConfig:
             raise ValueError("invalid wheel configuration")
 
 def wheel_windows(templates, config=WheelConfig()):
-    """Phase zero is the centered digit; next digit enters from below.
-
-    Resize each full cell to the pitch, then sample periodic windows. The
-    center offset aligns digit centers even when pitch differs from cell height.
-    """
     height, width = templates.shape[1:]
     strip = np.concatenate([cv2.resize(t, (width, config.pitch)) for t in templates])
     offset = (config.pitch - height) // 2
