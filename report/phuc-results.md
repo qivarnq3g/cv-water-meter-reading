@@ -27,17 +27,23 @@ Kết quả cũng không ủng hộ toàn bộ dự đoán trong PR #22: P vẫn
 
 ### Ảnh baseline đọc sai
 
+![Ảnh baseline đọc sai ở tầng nhẹ](figures/e1-errors-light.png)
+
 Hình E1a. Ảnh baseline đọc sai ở tầng nhẹ (`R < 1/3`).
 
 - L1: Số 0 lệch phải, sát vạch khung; khác vị trí/kiểu nét mẫu có thể khiến baseline nhầm thành 1.
 - L2: Số 3 nằm cao và có nét số kế tiếp ở đáy ô; mẫu chữ số đứng yên khớp nhầm thành 5.
 - L3: Nét số 8 nhòe, nền không đều; mẫu số 6 đạt điểm so khớp cao hơn mẫu số 8.
 
+![Ảnh baseline đọc sai ở tầng trung bình](figures/e1-errors-medium.png)
+
 Hình E1b. Ảnh baseline đọc sai ở tầng trung bình (`1/3 ≤ R < 2/3`).
 
 - M1: Ô cuối chứa phần số 0 và số 1; mẫu chữ số đứng yên khớp nhầm vào phần nét của số 1.
 - M2: Ô cuối chứa phần số 2 và số 3; tổ hợp nét chuyển tiếp khiến baseline chọn nhầm số 7.
 - M3: Số 6 nằm thấp, bị cắt đáy và còn nét số trước ở phía trên; baseline khớp nhầm thành 2.
+
+![Ảnh baseline đọc sai ở tầng nặng](figures/e1-errors-heavy.png)
 
 Hình E1c. Ảnh baseline đọc sai ở tầng nặng (`R ≥ 2/3`).
 
