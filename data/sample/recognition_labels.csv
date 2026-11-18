@@ -1,0 +1,5 @@
+name,source_split,reading,is_reversed,is_half_word
+test5.jpg,test,00001,0,0
+test6.jpg,test,00001,1,1
+test7.jpg,test,00001,0,1
+test8.jpg,test,00001,0,1

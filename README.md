@@ -28,14 +28,17 @@ Hạn nộp trên Moodle: 03:00 thứ Sáu 04/12/2026. Hạn của từng việc
 
 ## Cài đặt
 
-```
+Cần Python 3.10 trở lên. Chạy các lệnh dưới đây từ thư mục gốc của kho.
+
+```powershell
 python -m venv .venv
-.venv\Scripts\activate
-pip install -r requirements.txt
-pip install -e .
+.venv\Scripts\python.exe -m pip install -r requirements.txt
+.venv\Scripts\python.exe -m pip install -e .
 ```
 
-Đã thử với Python 3.11.9. Sau đó tải dữ liệu theo `data/README.md`. Nếu dữ liệu nằm ở thư mục khác, đặt biến môi trường `WMR_DATA_ROOT` trỏ tới thư mục chứa `Word-Wheel_Water_Meter_Dataset`, hoặc truyền `--data-root` cho từng script.
+Trên Linux và macOS, thay `.venv\Scripts\python.exe` bằng `.venv/bin/python`.
+
+Đã thử với Python 3.11.9. Có thể [chạy thử với dữ liệu mẫu](data/README.md#dữ-liệu-mẫu) ngay sau khi cài đặt. Để chạy thí nghiệm, tải dữ liệu đầy đủ theo [hướng dẫn tải và giải nén](data/README.md#tải-về). Nếu dữ liệu nằm ở thư mục khác, đặt biến môi trường `WMR_DATA_ROOT` trỏ tới thư mục chứa `Word-Wheel_Water_Meter_Dataset`, hoặc truyền `--data-root` cho từng script.
 
 ## Tập phát triển và tập đánh giá
 
@@ -73,8 +76,9 @@ Bốn chữ số đầu gần như không đổi giữa hai nhóm, còn chữ s�
 
 ## Kiểm thử
 
-```
-python -m pytest
+```powershell
+.venv\Scripts\python.exe -m pip install -r requirements-dev.txt
+.venv\Scripts\python.exe -m pytest
 ```
 
 ## Cách làm việc
