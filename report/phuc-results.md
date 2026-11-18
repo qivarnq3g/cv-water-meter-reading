@@ -25,6 +25,28 @@ P cải thiện số cuối 6,20 điểm phần trăm toàn tập, 8,11 điểm 
 
 Kết quả cũng không ủng hộ toàn bộ dự đoán trong PR #22: P vẫn giảm từ 64,76% ở tầng nhẹ xuống 28,75% ở tầng nặng. Chỉ 223/911 lỗi số cuối của P lệch một số (24,48%), nên chưa đúng dự đoán phần lớn lỗi là chữ số kề bên. Không sửa dự đoán sau khi xem eval. Mẫu trung bình bị nhòe, kiểu chữ khác nhau, bước bánh xe chung và chiều quay cố định là những khả năng cần kiểm tra ở thí nghiệm phát triển tiếp theo, chưa phải nguyên nhân đã chứng minh.
 
+### Ảnh baseline đọc sai
+
+Hình E1a. Ảnh baseline đọc sai ở tầng nhẹ (`R < 1/3`).
+
+- L1: Số 0 lệch phải, sát vạch khung; khác vị trí/kiểu nét mẫu có thể khiến baseline nhầm thành 1.
+- L2: Số 3 nằm cao và có nét số kế tiếp ở đáy ô; mẫu chữ số đứng yên khớp nhầm thành 5.
+- L3: Nét số 8 nhòe, nền không đều; mẫu số 6 đạt điểm so khớp cao hơn mẫu số 8.
+
+Hình E1b. Ảnh baseline đọc sai ở tầng trung bình (`1/3 ≤ R < 2/3`).
+
+- M1: Ô cuối chứa phần số 0 và số 1; mẫu chữ số đứng yên khớp nhầm vào phần nét của số 1.
+- M2: Ô cuối chứa phần số 2 và số 3; tổ hợp nét chuyển tiếp khiến baseline chọn nhầm số 7.
+- M3: Số 6 nằm thấp, bị cắt đáy và còn nét số trước ở phía trên; baseline khớp nhầm thành 2.
+
+Hình E1c. Ảnh baseline đọc sai ở tầng nặng (`R ≥ 2/3`).
+
+- H1: Hai phần số 0 và số 1 cùng hiện trong ô; nội dung khác mẫu nguyên vẹn, baseline chọn 7.
+- H2: Ô cuối có phần số 2 ở trên và số 3 ở dưới; mẫu một chữ số đứng yên khớp nhầm thành 4.
+- H3: Phần số 5 ở trên và số 6 ở dưới đều bị cắt; tổ hợp nét khiến baseline chọn nhầm số 2.
+
+Nguồn chung cho Hình E1a-E1c: chỉ số đúng và dự đoán baseline lấy từ [`experiments/phuc/results/predictions.csv`](../experiments/phuc/results/predictions.csv) (E1, #6); điểm độ lăn và tầng lấy từ [`experiments/roll/eval_roll.csv`](../experiments/roll/eval_roll.csv) (#3). Ảnh thuộc Word-Wheel Water Meter Dataset: S. Zhao và cộng sự, “A comprehensive dataset for word-wheel water meter reading under challenging conditions,” Dryad, 2026, DOI: [10.5061/dryad.7d7wm3860](https://doi.org/10.5061/dryad.7d7wm3860).
+
 ## E2 - ảnh hưởng tham số
 
 27 cấu hình và accuracy từng tầng trên dev_val ở e2_grid.csv. Cấu hình tốt nhất đạt 45,41% số cuối (nhẹ 59,55%, trung bình 54,23%, nặng 25,89%).
