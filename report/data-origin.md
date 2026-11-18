@@ -65,24 +65,70 @@ Bảng 2.3. Số ảnh thực tế của từng tập.
 
 Tổng số ảnh của `dev_fit` và `dev_val` là 9.577 + 2.290 = 11.867, khớp tập huấn luyện gốc năm chữ số ở Bảng 2.1; `eval` có 2.000 ảnh, khớp tập kiểm tra gốc. Đối chiếu tên ảnh và tập gốc cho thấy ba danh sách không trùng mẫu. Mọi quyết định chọn tham số phải dựa trên tập phát triển. Tập đánh giá được dùng để báo cáo kết quả sau khi phương pháp và tham số đã được chốt.
 
-## 2.6. Thước đo độ lăn và phân tầng tập đánh giá - chờ issue #3
+## 2.6. Thước đo độ lăn và phân tầng tập đánh giá
 
-Nguồn cập nhật: [issue #3 - Thước đo độ lăn của chữ số cuối và chia ba tầng](https://github.com/qivarnq3g/cv-water-meter-reading/issues/3). Theo issue này, định nghĩa, tiêu chí chia tầng, số ảnh và minh họa sẽ được ghi trong `experiments`.
+Phần này tổng hợp kết quả của issue #3 từ [mã đo độ lăn](../src/wmr/roll.py), [mô tả phương pháp](../experiments/roll/README.md), [danh sách phân tầng](../experiments/roll/eval_roll.csv) và hình minh họa đã có trong dự án. Cường độ thách thức được đo từ vị trí khe nền giữa hai chữ số liên tiếp trong ô cuối, rồi dùng để chia tập đánh giá thành ba tầng nhẹ, trung bình và nặng.
 
-- Định nghĩa thước đo trực tiếp trên ảnh: [CHỜ ISSUE #3: công thức, vùng ảnh dùng để đo, đơn vị hoặc miền giá trị].
-- Diễn giải cường độ: [CHỜ ISSUE #3: giá trị tăng/giảm biểu thị mức khó như thế nào].
-- Cách xác định ngưỡng: [CHỜ ISSUE #3: cơ sở chọn ngưỡng và quy tắc xử lý giá trị nằm trên biên].
-- Tệp mô tả phân tầng: [CHỜ ISSUE #3: đường dẫn chính xác trong `experiments`].
+### 2.6.1. Định nghĩa và cách tính thước đo
 
-Bảng 2.4. Phân tầng cường độ lăn trên tập đánh giá - chờ issue #3.
+Khi chữ số gần trạng thái đứng yên, khe nền thường nằm gần mép trên hoặc mép dưới của ô cửa sổ. Khi bánh xe lăn gần nửa bước, khe tiến về giữa ô và hai phần chữ số cùng xuất hiện rõ. Vì vậy, khoảng cách từ khe tới mép gần nhất được dùng làm đại lượng xấp xỉ mức độ lăn.
 
-| Tầng | Tiêu chí theo thước đo độ lăn | Số ảnh đánh giá | Ảnh minh họa |
-|---|---|---|---|
-| Nhẹ | [CHỜ ISSUE #3] | [CHỜ ISSUE #3] | [CHỜ ISSUE #3] |
-| Trung bình | [CHỜ ISSUE #3] | [CHỜ ISSUE #3] | [CHỜ ISSUE #3] |
-| Nặng | [CHỜ ISSUE #3] | [CHỜ ISSUE #3] | [CHỜ ISSUE #3] |
+Đầu vào là ảnh xám vùng đọc năm chữ số, cao 60 × rộng 200 điểm ảnh, đã xoay về hướng đọc theo cờ `reversed` như mô tả ở mục 2.4. Quy trình trong `src/wmr/roll.py` gồm:
 
-Khi hoàn thiện bảng, cần nêu cách xử lý ảnh không đo được hoặc không đủ điều kiện; tổng số ảnh của các tầng phải khớp quy mô tập đánh giá được dùng, hoặc có giải thích rõ phần loại trừ. Các thí nghiệm E1-E4 sẽ dùng tiêu chí phân tầng nhất quán và báo cáo chỉ số theo từng tầng kèm số ảnh, thay vì chỉ đưa trung bình toàn tập.
+1. Cân bằng histogram, sau đó nhị phân hóa thích nghi theo trung bình cục bộ với cửa sổ 15 × 15 điểm ảnh và hằng số trừ 8. Mặt nạ thu được có giá trị 1 ở nét mực và 0 ở nền.
+2. Lấy ô chữ số cuối, tương ứng một phần năm chiều rộng ảnh, rồi bỏ 10% ở mỗi bên của ô để giảm ảnh hưởng của vạch khung. Với ảnh rộng 200 điểm ảnh, vùng đo gồm các cột 164–195 theo chỉ số bắt đầu từ 0, rộng 32 điểm ảnh.
+3. Tính tỉ lệ điểm mực trên từng hàng của vùng đo và làm trơn dọc bằng bộ lọc Gauss với σ = 1,5 điểm ảnh, thu được hồ sơ hàng `p(y)`.
+4. Chọn hàng có giá trị `p(y)` nhỏ nhất làm vị trí khe, sau khi bỏ 5 hàng ở mỗi mép trên và dưới. Nếu nhiều hàng cùng đạt cực tiểu, mã chọn hàng đầu tiên theo chiều từ trên xuống.
+
+Gọi `H` là chiều cao ảnh, `y*` là chỉ số hàng của khe, với hàng đầu tiên có chỉ số 0. Công thức đúng theo mã triển khai là:
+
+$$
+y^{*}=\underset{y\in\{5,\ldots,H-6\}}{\operatorname{arg\,min}}\;p(y),
+\qquad
+R=\frac{\min\bigl(y^{*},\,H-1-y^{*}\bigr)}{(H-1)/2}.
+$$
+
+`R` không có đơn vị và nằm trong [0, 1]. Giá trị nhỏ biểu thị khe gần mép, tương ứng mức lăn nhẹ; giá trị lớn biểu thị khe gần giữa ô, tương ứng mức lăn gần nửa bước. Do bỏ biên và sử dụng tọa độ hàng rời rạc, với ảnh cao 60 điểm ảnh, giá trị nhỏ nhất có thể đạt là 10/59 ≈ 0,1695 và lớn nhất là 58/59 ≈ 0,9831. Đây cũng là miền giá trị quan sát được trong tệp phân tầng hiện có. `R` là thước đo xấp xỉ trên ảnh, không phải góc quay hay pha lăn được đo trực tiếp từ cơ cấu đồng hồ.
+
+### 2.6.2. Ngưỡng và quy tắc chia tầng
+
+Hai ngưỡng cố định là 1/3 và 2/3, chia miền độ lăn chuẩn hóa thành ba khoảng. Theo mô tả của issue #3, ngưỡng được đặt theo ý nghĩa hình học của vị trí khe, không chọn theo phân vị để cân bằng số ảnh và không dò theo kết quả trên tập đánh giá. Quy tắc biên thống nhất với hàm `roll_tier`: `R = 1/3` thuộc tầng trung bình, `R = 2/3` thuộc tầng nặng.
+
+Điểm `R` được tính từ ảnh, không dùng nhãn chỉ số hoặc cờ `half-word`; cờ `reversed` chỉ phục vụ giả định biết trước hướng ảnh. Cờ `half-word` được dùng để mô tả thành phần của từng tầng trong Bảng 2.4. Vì một cờ nhị phân và một phép đo liên tục có ý nghĩa khác nhau, tầng nặng không đồng nhất với nhóm ảnh có cờ `half-word`.
+
+### 2.6.3. Phân bố tập đánh giá và hình minh họa
+
+Bảng 2.4 được thống kê bằng cách ghép `experiments/roll/eval_roll.csv` với `experiments/splits/eval.csv` theo tên ảnh. Phần trăm trong cột số ảnh đánh giá tính trên toàn bộ 2.000 ảnh; phần trăm `half-word` tính trong từng tầng.
+
+Bảng 2.4. Phân tầng cường độ lăn trên tập đánh giá.
+
+| Tầng | Điều kiện | Số ảnh đánh giá | Ảnh có cờ `half-word` | Ảnh minh họa |
+|---|---|---:|---:|---|
+| Nhẹ (`light`) | 0 ≤ R < 1/3 | 437 (21,85%) | 27 (6,2%) | Hàng 1 của Hình 2.1 |
+| Trung bình (`medium`) | 1/3 ≤ R < 2/3 | 1.156 (57,80%) | 89 (7,7%) | Hàng 2 của Hình 2.1 |
+| Nặng (`heavy`) | 2/3 ≤ R ≤ 1 | 407 (20,35%) | 239 (58,7%) | Hàng 3 của Hình 2.1 |
+| Tổng | Toàn bộ tập đánh giá | 2.000 (100,00%) | 355 (17,8%) | — |
+
+Tệp phân tầng có đủ 2.000 tên ảnh duy nhất, khớp hoàn toàn danh sách `eval`; tổng ba tầng là 437 + 1.156 + 407 = 2.000. Không có ảnh bị loại khỏi bảng. Tổng số ảnh `half-word` là 27 + 89 + 239 = 355, khớp Bảng 2.3. Tỉ lệ `half-word` cao hơn ở tầng nặng là một dấu hiệu phù hợp với mục đích của phép đo, nhưng chưa đủ để khẳng định mọi ảnh đều được phân tầng đúng về mặt vật lý.
+
+Hình 2.1. Sáu ảnh minh họa cho mỗi tầng: hàng trên là nhẹ, hàng giữa là trung bình, hàng dưới là nặng. Số phía trên mỗi ảnh là điểm độ lăn `R`, làm tròn đến hai chữ số thập phân. Hình nằm tại `report/figures/roll-tiers.png` và được tạo bằng cách lấy mẫu ngẫu nhiên trong từng tầng với seed 0, rồi sắp các ảnh đã chọn theo điểm tăng dần.
+
+### 2.6.4. Giới hạn và khả năng tái tạo
+
+Phép đo giả định hàng ít nét mực nhất là khe giữa hai chữ số. Khoảng trống bên trong một chữ số, ánh sáng không đều, nét mờ hoặc vạch khung còn sót có thể làm sai vị trí khe. Hình 2.1 có ví dụ chỉ số `02549` (`test1780.jpg`) được xếp tầng nặng với `R = 0,8136`, dù chữ số cuối trông gần trạng thái đứng yên. Vì vậy, các tầng cần được hiểu là phân tầng theo thước đo ảnh; việc kiểm tra ảnh và các yếu tố gây nhiễu vẫn cần thiết khi diễn giải kết quả E1–E4.
+
+Chương trình hiện tại gán tầng cho mọi ảnh đọc được có chiều cao đủ để bỏ biên, chưa có cờ riêng để nhận biết phép đo khe không đáng tin cậy. Nếu ảnh bị thiếu, không giải mã được hoặc quá thấp để tìm khe, chương trình báo lỗi và dừng; không tự bỏ ảnh hay gán điểm thay thế. Trên danh sách kết quả hiện có, mọi ảnh đều có điểm hợp lệ và nhãn tầng phù hợp với hai ngưỡng.
+
+Mỗi dòng trong `experiments/roll/eval_roll.csv` lưu ba trường `name`, `roll` và `tier`. Điểm được ghi với bốn chữ số thập phân, còn nhãn tầng được tính từ giá trị chưa làm tròn. Có thể tái tạo từ thư mục gốc dự án bằng lệnh dưới đây sau khi cài các thư viện và giải nén dữ liệu theo README:
+
+```powershell
+$env:PYTHONPATH = "src"
+python experiments/make_roll_tiers.py --data-root data
+```
+
+Nếu dữ liệu nằm ở nơi khác, thay `data` bằng thư mục chứa `Word-Wheel_Water_Meter_Dataset`.
+
+E1, E3 và phần E4 kiểm tra độ lệch chiều cao chữ số trên ảnh thật dùng thống nhất cách phân tầng của tập `eval`. E2 phân tầng riêng trên `dev_val` bằng cùng phép đo `R` và hai ngưỡng 1/3, 2/3. Phần ảnh lăn tổng hợp của E4 được tạo từ `dev_val`, phân tích theo pha lăn điều khiển φ và đồng thời ghi nhận độ lăn `R` đo được. Các phép so sánh baseline với phương pháp đề xuất trong từng thí nghiệm dùng cùng tập ảnh và thước đo; kết quả phân tầng được báo cáo kèm số ảnh mỗi tầng.
 
 ## Tài liệu tham khảo của mục này
 [1] S. Zhao, Y. Gao, F. Liu, Y. Zhang, and J. Li, “A comprehensive dataset for word-wheel water meter reading under challenging conditions,” Dryad, ver. 8, Jan. 30, 2026, [Dataset], doi: [10.5061/dryad.7d7wm3860](https://doi.org/10.5061/dryad.7d7wm3860). Accessed: Nov. 14, 2026. [Online]. Available: https://datadryad.org/dataset/doi:10.5061/dryad.7d7wm3860.
