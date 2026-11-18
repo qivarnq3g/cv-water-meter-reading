@@ -76,7 +76,7 @@ Khi chữ số gần trạng thái đứng yên, khe nền thường nằm gần
 Đầu vào là ảnh xám vùng đọc năm chữ số, cao 60 × rộng 200 điểm ảnh, đã xoay về hướng đọc theo cờ `reversed` như mô tả ở mục 2.4. Quy trình trong `src/wmr/roll.py` gồm:
 
 1. Cân bằng histogram, sau đó nhị phân hóa thích nghi theo trung bình cục bộ với cửa sổ 15 × 15 điểm ảnh và hằng số trừ 8. Mặt nạ thu được có giá trị 1 ở nét mực và 0 ở nền.
-2. Lấy ô chữ số cuối, tương ứng một phần năm chiều rộng ảnh, rồi bỏ 10% ở mỗi bên của ô để giảm ảnh hưởng của vạch khung. Với ảnh rộng 200 điểm ảnh, vùng đo gồm các cột 164–195 theo chỉ số bắt đầu từ 0, rộng 32 điểm ảnh.
+2. Lấy ô chữ số cuối, tương ứng một phần năm chiều rộng ảnh, rồi bỏ 10% ở mỗi bên của ô để giảm ảnh hưởng của vạch khung. Với ảnh rộng 200 điểm ảnh, vùng đo gồm các cột 164-195 theo chỉ số bắt đầu từ 0, rộng 32 điểm ảnh.
 3. Tính tỉ lệ điểm mực trên từng hàng của vùng đo và làm trơn dọc bằng bộ lọc Gauss với σ = 1,5 điểm ảnh, thu được hồ sơ hàng `p(y)`.
 4. Chọn hàng có giá trị `p(y)` nhỏ nhất làm vị trí khe, sau khi bỏ 5 hàng ở mỗi mép trên và dưới. Nếu nhiều hàng cùng đạt cực tiểu, mã chọn hàng đầu tiên theo chiều từ trên xuống.
 
@@ -107,7 +107,7 @@ Bảng 2.4. Phân tầng cường độ lăn trên tập đánh giá.
 | Nhẹ (`light`) | 0 ≤ R < 1/3 | 437 (21,85%) | 27 (6,2%) | Hàng 1 của Hình 2.1 |
 | Trung bình (`medium`) | 1/3 ≤ R < 2/3 | 1.156 (57,80%) | 89 (7,7%) | Hàng 2 của Hình 2.1 |
 | Nặng (`heavy`) | 2/3 ≤ R ≤ 1 | 407 (20,35%) | 239 (58,7%) | Hàng 3 của Hình 2.1 |
-| Tổng | Toàn bộ tập đánh giá | 2.000 (100,00%) | 355 (17,8%) | — |
+| Tổng | Toàn bộ tập đánh giá | 2.000 (100,00%) | 355 (17,8%) | - |
 
 Tệp phân tầng có đủ 2.000 tên ảnh duy nhất, khớp hoàn toàn danh sách `eval`; tổng ba tầng là 437 + 1.156 + 407 = 2.000. Không có ảnh bị loại khỏi bảng. Tổng số ảnh `half-word` là 27 + 89 + 239 = 355, khớp Bảng 2.3. Tỉ lệ `half-word` cao hơn ở tầng nặng là một dấu hiệu phù hợp với mục đích của phép đo, nhưng chưa đủ để khẳng định mọi ảnh đều được phân tầng đúng về mặt vật lý.
 
@@ -115,7 +115,7 @@ Hình 2.1. Sáu ảnh minh họa cho mỗi tầng: hàng trên là nhẹ, hàng 
 
 ### 2.6.4. Giới hạn và khả năng tái tạo
 
-Phép đo giả định hàng ít nét mực nhất là khe giữa hai chữ số. Khoảng trống bên trong một chữ số, ánh sáng không đều, nét mờ hoặc vạch khung còn sót có thể làm sai vị trí khe. Hình 2.1 có ví dụ chỉ số `02549` (`test1780.jpg`) được xếp tầng nặng với `R = 0,8136`, dù chữ số cuối trông gần trạng thái đứng yên. Vì vậy, các tầng cần được hiểu là phân tầng theo thước đo ảnh; việc kiểm tra ảnh và các yếu tố gây nhiễu vẫn cần thiết khi diễn giải kết quả E1–E4.
+Phép đo giả định hàng ít nét mực nhất là khe giữa hai chữ số. Khoảng trống bên trong một chữ số, ánh sáng không đều, nét mờ hoặc vạch khung còn sót có thể làm sai vị trí khe. Hình 2.1 có ví dụ chỉ số `02549` (`test1780.jpg`) được xếp tầng nặng với `R = 0,8136`, dù chữ số cuối trông gần trạng thái đứng yên. Vì vậy, các tầng cần được hiểu là phân tầng theo thước đo ảnh; việc kiểm tra ảnh và các yếu tố gây nhiễu vẫn cần thiết khi diễn giải kết quả E1-E4.
 
 Chương trình hiện tại gán tầng cho mọi ảnh đọc được có chiều cao đủ để bỏ biên, chưa có cờ riêng để nhận biết phép đo khe không đáng tin cậy. Nếu ảnh bị thiếu, không giải mã được hoặc quá thấp để tìm khe, chương trình báo lỗi và dừng; không tự bỏ ảnh hay gán điểm thay thế. Trên danh sách kết quả hiện có, mọi ảnh đều có điểm hợp lệ và nhãn tầng phù hợp với hai ngưỡng.
 
@@ -130,11 +130,6 @@ Nếu dữ liệu nằm ở nơi khác, thay `data` bằng thư mục chứa `Wo
 
 E1, E3 và phần E4 kiểm tra độ lệch chiều cao chữ số trên ảnh thật dùng thống nhất cách phân tầng của tập `eval`. E2 phân tầng riêng trên `dev_val` bằng cùng phép đo `R` và hai ngưỡng 1/3, 2/3. Phần ảnh lăn tổng hợp của E4 được tạo từ `dev_val`, phân tích theo pha lăn điều khiển φ và đồng thời ghi nhận độ lăn `R` đo được. Các phép so sánh baseline với phương pháp đề xuất trong từng thí nghiệm dùng cùng tập ảnh và thước đo; kết quả phân tầng được báo cáo kèm số ảnh mỗi tầng.
 
-## Tài liệu tham khảo của mục này
-[1] S. Zhao, Y. Gao, F. Liu, Y. Zhang, and J. Li, “A comprehensive dataset for word-wheel water meter reading under challenging conditions,” Dryad, ver. 8, Jan. 30, 2026, [Dataset], doi: [10.5061/dryad.7d7wm3860](https://doi.org/10.5061/dryad.7d7wm3860). Accessed: Nov. 14, 2026. [Online]. Available: https://datadryad.org/dataset/doi:10.5061/dryad.7d7wm3860.
+## Tài liệu tham khảo
 
-[2] Dryad, “Dataset metadata: doi:10.5061/dryad.7d7wm3860,” Dryad REST API. Accessed: Nov. 14, 2026. [Online]. Available: https://datadryad.org/api/v2/datasets/doi%3A10.5061%2Fdryad.7d7wm3860.
-
-[3] Creative Commons, “CC0 1.0 Universal.” Accessed: Nov. 14, 2026. [Online]. Available: https://creativecommons.org/publicdomain/zero/1.0/.
-
-[4] S. Zhao, Y. Gao, F. Liu, Y. Zhang, and J. Li, “A Comprehensive Dataset for Word-Wheel Water Meter Reading Under Challenging Conditions,” Scientific Data, vol. 13, Art. no. 479, Feb. 2026, doi: [10.1038/s41597-026-06809-z](https://doi.org/10.1038/s41597-026-06809-z). Accessed: Nov. 14, 2026. [Online]. Available: https://www.nature.com/articles/s41597-026-06809-z.
+Xem [danh sách tài liệu tham khảo chung](references.md).
