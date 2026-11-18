@@ -21,12 +21,12 @@ python experiments/run_phuc.py --stage evaluate --data-root /path/to/data
 
 - #3: mã đo độ lăn, bảng tầng và hình được kế thừa từ PR #21; đã tái lập đúng nhãn tầng của toàn bộ 2.000 ảnh eval.
 - #6 E1: `predictions.csv`, `summary.csv` (accuracy từng số/cả chuỗi, theo tầng), `e1_controls.csv` (độ sáng, tương phản, Laplacian variance, chữ số đúng, half-word).
-- #8: `src/wmr/proposed.py`; dải tuần hoàn 0–9, tìm pha bằng NCC; `enabled=False` trả đúng baseline cùng max_shift. Khi báo cáo E3 phải dùng cùng max_shift với cấu hình đã chọn.
+- #8: `src/wmr/proposed.py`; dải tuần hoàn 0 tới 9, tìm pha bằng NCC; `enabled=False` trả đúng baseline cùng max_shift. Khi báo cáo E3 phải dùng cùng max_shift với cấu hình đã chọn.
 - #11 E2: grid theo tầng trên dev_val, cấu hình đã chọn, ảnh raw/equalized/ô cuối/mẫu khớp. Đã có kết quả và nhận xét trong báo cáo.
 - #16: notebook đọc E1/E2 và kết quả E3/E4 của Quang khi có; không tự tạo số liệu thay Quang.
 
 ## Giới hạn cần công bố
 
-Thước đo khe nền có thể nhầm khoảng trống bên trong chữ số. Mối liên hệ accuracy–tầng không đủ chứng minh nhân quả. E1 xuất proxy độ sáng/độ nét và độ chính xác bốn số đầu; không có ID đồng hồ nên không khẳng định đã kiểm soát cùng loại đồng hồ. Cần kiểm tra bảng controls và ảnh thật trước khi kết luận. Quy ước chữ số khi chuyển 9→0 và chiều quay phải xác minh từ ảnh dev_val. P dùng một chiều quay cố định và một pitch chung; đây là giả thuyết cần kiểm chứng, không phải kết quả đã xác nhận.
+Thước đo khe nền có thể nhầm khoảng trống bên trong chữ số. Mối liên hệ độ chính xác và tầng không đủ chứng minh nhân quả. E1 xuất proxy độ sáng/độ nét và độ chính xác bốn số đầu; không có ID đồng hồ nên không khẳng định đã kiểm soát cùng loại đồng hồ. Cần kiểm tra bảng controls và ảnh thật trước khi kết luận. Quy ước chữ số khi chuyển 9→0 và chiều quay phải xác minh từ ảnh dev_val. P dùng một chiều quay cố định và một pitch chung; đây là giả thuyết cần kiểm chứng, không phải kết quả đã xác nhận.
 
-Ngày 15/11/2026: đã nhận ZIP từ Downloads, SHA-256 khớp metadata Dryad, giải nén đủ detection/recognition. Đã kiểm tra mọi ảnh của ba split tồn tại, tái lập đúng 2.000 nhãn tầng của PR #21; chạy xong tune/evaluate. Kết quả và nhận xét xem `report/phuc-results.md`. E3/E4 vẫn chờ Quang.
+Ngày 15/11/2026: tệp ZIP tải từ Dryad có SHA-256 khớp metadata Dryad, giải nén đủ detection/recognition. Đã kiểm tra mọi ảnh của ba split tồn tại, tái lập đúng 2.000 nhãn tầng của PR #21; chạy xong tune/evaluate. Kết quả và nhận xét xem `report/phuc-results.md`. E3, E4 ở `experiments/quang/`.
