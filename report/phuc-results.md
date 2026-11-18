@@ -1,10 +1,10 @@
-# Kết quả thực nghiệm của Phúc — 15/11/2026
+# Kết quả thực nghiệm của Phúc - 15/11/2026
 
 ## Dữ liệu và quy trình
 
-Đã giải nén bản Dryad trong Downloads vào `data/Word-Wheel_Water_Meter_Dataset/`, đủ detection và recognition. ZIP SHA-256: `3b7d3d8168ab924314a7c71987ce09f54dec95818a9cb484b46ea804fc1d90e6`, khớp metadata Dryad đã đọc. Ba tập có 9.577/2.290/2.000 ảnh, không thiếu tệp. Đo lại độ lăn trên toàn bộ eval cho nhãn tầng trùng 100% CSV của PR #21: 437 nhẹ, 1.156 trung bình, 407 nặng.
+Đã giải nén bản Dryad vào `data/Word-Wheel_Water_Meter_Dataset/`, đủ detection và recognition. ZIP SHA-256: `3b7d3d8168ab924314a7c71987ce09f54dec95818a9cb484b46ea804fc1d90e6`, khớp metadata Dryad đã đọc. Ba tập có 9.577/2.290/2.000 ảnh, không thiếu tệp. Đo lại độ lăn trên toàn bộ eval cho nhãn tầng trùng 100% CSV của PR #21: 437 nhẹ, 1.156 trung bình, 407 nặng.
 
-Mẫu chữ số lấy từ 6.178 ảnh dev_fit không half-word. Dò 27 cấu hình trên dev_val, chốt pitch=58, max_shift=6, threshold=0.4 rồi mới đánh giá eval; không chọn lại tham số từ eval. Fingerprint split lưu trong selected.json. Ngưỡng 0.4 là biên dưới của miền khảo sát; chưa thể kết luận là tối ưu ngoài miền này.
+Mẫu chữ số lấy từ 6.178 ảnh dev_fit không half-word. Dò 27 cấu hình trên dev_val, chốt pitch=58, max_shift=6, threshold=0.4 rồi mới đánh giá eval; không chọn lại tham số từ eval. Fingerprint split lưu trong selected.json. Ngưỡng 0.4 là biên dưới của miền khảo sát; dò thêm trên dev_val (pitch 58, shift 6) cho 0.3 là 45,20%, 0.2 là 43,67%, 0.1 là 37,64%, nên 0.4 là cực đại.
 
 ## E1 và đánh giá phương pháp
 
@@ -25,7 +25,7 @@ P cải thiện số cuối 6,20 điểm phần trăm toàn tập, 8,11 điểm 
 
 Kết quả cũng không ủng hộ toàn bộ dự đoán trong PR #22: P vẫn giảm từ 64,76% ở tầng nhẹ xuống 28,75% ở tầng nặng. Chỉ 223/911 lỗi số cuối của P lệch một số (24,48%), nên chưa đúng dự đoán phần lớn lỗi là chữ số kề bên. Không sửa dự đoán sau khi xem eval. Mẫu trung bình bị nhòe, kiểu chữ khác nhau, bước bánh xe chung và chiều quay cố định là những khả năng cần kiểm tra ở thí nghiệm phát triển tiếp theo, chưa phải nguyên nhân đã chứng minh.
 
-## E2 — ảnh hưởng tham số
+## E2 - ảnh hưởng tham số
 
 27 cấu hình và accuracy từng tầng trên dev_val ở e2_grid.csv. Cấu hình tốt nhất đạt 45,41% số cuối (nhẹ 59,55%, trung bình 54,23%, nặng 25,89%).
 
@@ -37,4 +37,4 @@ Kết quả cũng không ủng hộ toàn bộ dự đoán trong PR #22: P vẫn
 
 ## Notebook và phần còn lại
 
-Notebook phuc_experiments.ipynb tổng hợp E1/E2 từ CSV thật, có đồ thị và nhận xét. E3/E4 vẫn chờ kết quả của Quang; notebook báo rõ phần chưa có. Vì thế #16 chưa được coi là hoàn tất toàn bộ E1–E4. Mã P là bản thực hiện để nhóm review, chưa thay cho việc cả nhóm chốt PR #22. Không đóng issue hay gộp PR tự động.
+Notebook phuc_experiments.ipynb tổng hợp E1/E2 từ CSV thật, có đồ thị và nhận xét. E3/E4 vẫn chờ kết quả của Quang; notebook báo rõ phần chưa có. Vì thế #16 chưa được coi là hoàn tất toàn bộ E1 tới E4. Mã P là bản thực hiện để nhóm review, chưa thay cho việc cả nhóm chốt PR #22. Không đóng issue hay gộp PR tự động.
