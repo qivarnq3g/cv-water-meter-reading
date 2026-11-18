@@ -5,7 +5,7 @@ Kho này không chứa bộ dữ liệu đầy đủ (tệp nén khoảng 2,6 GB
 ## Tải về
 
 1. Mở trang Dryad của bộ Word-Wheel Water Meter Dataset: <https://doi.org/10.5061/dryad.7d7wm3860>.
-2. Tải `Word-Wheel_Water_Meter_Dataset.zip` bằng trình duyệt.
+2. Bấm **Download full dataset** trong trình duyệt. Mở gói `doi_10_5061_dryad_7d7wm3860__v20260130.zip` và lấy tệp `Word-Wheel_Water_Meter_Dataset.zip` bên trong. Có thể tải riêng tệp này từ danh sách trên trang nếu trình duyệt tải được qua liên kết trực tiếp.
 3. Giải nén vào `data/`. Kiểm tra hai thư mục `data/Word-Wheel_Water_Meter_Dataset/detection/` và `data/Word-Wheel_Water_Meter_Dataset/recognition/`. Nếu trình giải nén tạo thêm một thư mục bao ngoài, di chuyển thư mục chứa trực tiếp `detection/` và `recognition/` về đúng vị trí trên.
 4. Sau khi [cài đặt môi trường](../README.md#cài-đặt), chạy `.venv\Scripts\python.exe experiments/make_splits.py` từ thư mục gốc để kiểm tra mã đọc được nhãn của bộ dữ liệu.
 

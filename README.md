@@ -38,7 +38,7 @@ python -m venv .venv
 
 Trên Linux và macOS, thay `.venv\Scripts\python.exe` bằng `.venv/bin/python`.
 
-Đã thử với Python 3.11.9. Có thể [chạy thử với dữ liệu mẫu](data/README.md#dữ-liệu-mẫu) ngay sau khi cài đặt. Để chạy thí nghiệm, tải dữ liệu đầy đủ theo [hướng dẫn tải và giải nén](data/README.md#tải-về). Nếu dữ liệu nằm ở thư mục khác, đặt biến môi trường `WMR_DATA_ROOT` trỏ tới thư mục chứa `Word-Wheel_Water_Meter_Dataset`, hoặc truyền `--data-root` cho từng script.
+Đã thử với Python 3.11.9 và kiểm tra cài mới trên Windows với Python 3.13.17. Có thể [chạy thử với dữ liệu mẫu](data/README.md#dữ-liệu-mẫu) ngay sau khi cài đặt. Để chạy thí nghiệm, tải dữ liệu đầy đủ theo [hướng dẫn tải và giải nén](data/README.md#tải-về). Nếu dữ liệu nằm ở thư mục khác, đặt biến môi trường `WMR_DATA_ROOT` trỏ tới thư mục chứa `Word-Wheel_Water_Meter_Dataset`, hoặc truyền `--data-root` cho từng script.
 
 ## Tập phát triển và tập đánh giá
 
