@@ -1,0 +1,13 @@
+tier,height_group,method,n,last_accuracy
+light,near,baseline,407,0.6461916461916462
+light,near,proposed,407,0.6633906633906634
+light,far,baseline,30,0.5666666666666667
+light,far,proposed,30,0.43333333333333335
+medium,near,baseline,1113,0.522911051212938
+medium,near,proposed,1113,0.6001796945193172
+medium,far,baseline,43,0.4418604651162791
+medium,far,proposed,43,0.4883720930232558
+heavy,near,baseline,389,0.20051413881748073
+heavy,near,proposed,389,0.2827763496143959
+heavy,far,baseline,18,0.3333333333333333
+heavy,far,proposed,18,0.3888888888888889
