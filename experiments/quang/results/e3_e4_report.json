@@ -1,0 +1,41 @@
+{
+  "config": {
+    "pitch": 58,
+    "threshold": 0.4,
+    "max_shift": 6,
+    "enabled": true,
+    "continuous": true
+  },
+  "prediction4": {
+    "median_digit_height": 56.5,
+    "tolerance": 0.09
+  },
+  "direction": {
+    "n": 836,
+    "forward_mean_score": 0.4203307984227484,
+    "backward_mean_score": 0.4212335037629,
+    "forward_wins": 0.46411483253588515
+  },
+  "synthetic": {
+    "pairs": 165,
+    "still_pool": {
+      "0": 17,
+      "1": 25,
+      "2": 16,
+      "3": 26,
+      "4": 16,
+      "5": 16,
+      "6": 13,
+      "7": 7,
+      "8": 19,
+      "9": 10
+    },
+    "break_level": 0.5,
+    "first_phi_below_break_level": {
+      "proposed": null,
+      "baseline_s2": 0.1,
+      "baseline_s6": 0.2,
+      "baseline_s10": 0.3
+    }
+  }
+}
