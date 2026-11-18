@@ -146,7 +146,9 @@ def synthetic(args, templates, config):
         group = [r for r in rows if r['phi'] == phi]
         record = dict(phi=float(phi), n=len(group),
                       measured_roll=float(np.mean([r['measured_roll'] for r in group])),
-                      proposed_phase_mae=float(np.mean([abs(r['phase_error']) for r in group])))
+                      proposed_phase_mae=float(np.mean([abs(r['phase_error']) for r in group])),
+                      proposed_phase_median=float(np.median([abs(r['phase_error']) for r in group])),
+                      proposed_phase_within_quarter=float(np.mean([abs(r['phase_error']) < 0.25 for r in group])))
         for method in methods:
             record[f'{method}_reads_lower'] = float(np.mean([r[method] == r['digit'] for r in group]))
             record[f'{method}_reads_lower_or_next'] = float(np.mean(
@@ -176,10 +178,12 @@ def plot(curve, out, shifts):
     axes[0].set_title('E4: độ chính xác theo pha lăn')
     axes[0].set_ylim(0, 1.02)
     axes[0].legend()
-    axes[1].plot(phi, [c['proposed_phase_mae'] for c in curve], 'o-')
+    axes[1].plot(phi, [c['proposed_phase_median'] for c in curve], 'o-', label='Trung vị sai số pha (chữ số)')
+    axes[1].plot(phi, [c['proposed_phase_within_quarter'] for c in curve], 's--', label='Tỉ lệ sai số pha dưới 0,25')
     axes[1].set_xlabel('Pha lăn tổng hợp φ')
-    axes[1].set_ylabel('Sai số pha tuyệt đối trung bình')
-    axes[1].set_title('E4: sai số ước lượng pha của phương pháp đề xuất')
+    axes[1].set_ylim(0, 1.02)
+    axes[1].set_title('E4: ước lượng pha của phương pháp đề xuất')
+    axes[1].legend()
     fig.tight_layout()
     fig.savefig(out / 'e4_curve.png', dpi=160)
     plt.close(fig)
