@@ -1,0 +1,37 @@
+name: Issue 5 clean Windows setup
+on: push
+permissions:
+  contents: read
+jobs:
+  clean-windows:
+    runs-on: windows-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Install and verify sample data
+        run: |
+          python -m venv .venv
+          if ($LASTEXITCODE) { exit $LASTEXITCODE }
+          .venv\Scripts\python.exe --version
+          .venv\Scripts\python.exe -m pip install -r requirements.txt
+          if ($LASTEXITCODE) { exit $LASTEXITCODE }
+          .venv\Scripts\python.exe -m pip install -e .
+          if ($LASTEXITCODE) { exit $LASTEXITCODE }
+          .venv\Scripts\python.exe -m pip install -r requirements-dev.txt
+          if ($LASTEXITCODE) { exit $LASTEXITCODE }
+          .venv\Scripts\python.exe -m pytest
+          if ($LASTEXITCODE) { exit $LASTEXITCODE }
+          $smoke = (Select-String -Path data/README.md -SimpleMatch ' -c "from pathlib').Line
+          Invoke-Expression $smoke
+      - name: Fetch and verify Dryad dataset
+        run: |
+          curl.exe -fLsS --max-time 600 -o full-dataset.zip https://datadryad.org/downloads/file_stream/4579939
+          if ($LASTEXITCODE) { exit $LASTEXITCODE }
+          tar.exe -xf full-dataset.zip -C data
+          if ($LASTEXITCODE) { exit $LASTEXITCODE }
+          .venv\Scripts\python.exe experiments/make_splits.py
+          if ($LASTEXITCODE) { exit $LASTEXITCODE }
+          git diff --exit-code -- experiments/splits
