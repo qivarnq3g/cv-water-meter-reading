@@ -6,9 +6,9 @@ Thực nghiệm dùng ảnh vùng hiển thị đã cắt sẵn thuộc phần n
 
 | Tập | Nguồn | Số ảnh | Có cờ `half-word` | Vai trò |
 |---|---|---:|---:|---|
-| `dev_fit` | Train gốc | 9.577 | 3.399 | Dựng mẫu chữ số từ 6.178 ảnh không có cờ `half-word` |
-| `dev_val` | Train gốc | 2.290 | 836 | Chọn thước đo độ lăn, dò tham số và lấy ô nguồn cho E4 tổng hợp |
-| `eval` | Test gốc | 2.000 | 355 | Đánh giá trên ảnh thật sau khi chốt tham số |
+| `dev_fit` | tập huấn luyện gốc | 9.577 | 3.399 | Dựng mẫu chữ số từ 6.178 ảnh không có cờ `half-word` |
+| `dev_val` | tập huấn luyện gốc | 2.290 | 836 | Chọn thước đo độ lăn, dò tham số và lấy ô nguồn cho E4 tổng hợp |
+| `eval` | tập kiểm tra gốc | 2.000 | 355 | Đánh giá trên ảnh thật sau khi chốt tham số |
 
 Ảnh train vào `dev_val` khi SHA-1 của tên ảnh, diễn giải thành số nguyên, có số dư dưới 20 sau khi chia cho 100. Các ảnh train còn lại vào `dev_fit`. Danh sách cố định nằm trong [`experiments/splits/`](../experiments/splits/).
 
@@ -26,7 +26,7 @@ Thước đo chính là tỷ lệ đọc đúng chữ số thứ năm. Báo cáo
 
 Mỗi mẫu chữ số là trung bình các ô tương ứng ở bốn vị trí đầu của các ảnh `dev_fit` đủ điều kiện. Baseline so khớp mẫu bằng tương quan chéo chuẩn hóa. Phương pháp đề xuất giữ nguyên cách đọc bốn vị trí đầu và dùng dải bánh xe tuần hoàn cho ô cuối.
 
-E2 thử 27 tổ hợp trên `dev_val`: bước bánh xe 54/58/62 px, bán kính dịch ngang 2/6/10 px và ngưỡng giải mã pha 0,4/0,5/0,6. Tiêu chí là độ chính xác chữ số cuối trên toàn `dev_val`, ưu tiên tổ hợp xuất hiện trước trong lưới khi bằng điểm. Cấu hình chốt là **58 px, 6 px, 0,4** (45,41%). Phúc kiểm tra thêm các ngưỡng 0,1/0,2/0,3 trên `dev_val` với bước và bán kính đã chọn. Các ngưỡng này cho điểm thấp hơn 0,4. Lệnh `tune` bên dưới tái tạo lưới 27 tổ hợp. Cấu hình, mã băm danh sách ảnh và mẫu chữ số được lưu trước khi đánh giá `eval`. Xem [báo cáo của Phúc](phuc-results.md) và [bảng E2](../experiments/phuc/results/e2_grid.csv).
+E2 thử 27 tổ hợp trên `dev_val`: bước bánh xe 54/58/62 px, bán kính dịch ngang 2/6/10 px và ngưỡng giải mã pha 0,4/0,5/0,6. Tiêu chí là độ chính xác chữ số cuối trên toàn `dev_val`, ưu tiên tổ hợp xuất hiện trước trong lưới khi bằng điểm. Cấu hình chốt là 58 px, 6 px, 0,4 (45,41%). Lệnh `tune` bên dưới tái tạo lưới 27 tổ hợp. Cấu hình, mã băm danh sách ảnh và mẫu chữ số được lưu trước khi đánh giá `eval`. Xem [kết quả E1 và E2](phuc-results.md) và [bảng E2](../experiments/phuc/results/e2_grid.csv).
 
 ## 7.3. Quy trình chạy
 
@@ -49,4 +49,4 @@ python experiments/run_e3_e4.py --output-dir outputs/section-7/e3-e4
 
 Các lệnh tạo tập, tạo tầng và chạy E1/E2 ghi lại một số tệp đã được theo dõi trong Git. Dùng một bản checkout riêng khi cần giữ nguyên các kết quả trong thư mục làm việc hiện tại.
 
-Đã chạy lại toàn bộ khối lệnh trên Windows với dữ liệu đầy đủ. Danh sách ảnh, bảng phân tầng và các bảng E1–E4 tái lập kết quả đã lưu trong kho, với sai khác dấu phẩy động nhỏ hơn $10^{-6}$ ở các bảng E4 đối chiếu.
+Đã chạy lại toàn bộ khối lệnh trên Windows với dữ liệu đầy đủ. Danh sách ảnh, bảng phân tầng và các bảng từ E1 đến E4 tái lập kết quả đã lưu trong kho, với sai khác dấu phẩy động nhỏ hơn $10^{-6}$ ở các bảng E4 đối chiếu.
