@@ -35,3 +35,14 @@ def test_first_four_unchanged():
 @pytest.mark.parametrize('kwargs',[{'pitch':0},{'threshold':0},{'threshold':1.1},{'max_shift':-1}])
 def test_invalid_config(kwargs):
     with pytest.raises(ValueError): WheelConfig(**kwargs)
+
+def test_discrete_phases_stay_near_digit_centers(monkeypatch):
+    import wmr.proposed as p
+    monkeypatch.setattr(p,'preprocess',lambda x:x)
+    full=WheelReader(templates(),WheelConfig(pitch=60,max_shift=4))
+    discrete=WheelReader(templates(),WheelConfig(pitch=60,max_shift=4,continuous=False))
+    assert len(discrete.windows)==10*9
+    image=np.tile(full.windows[150],(1,5))
+    assert full.phase(image)[0]==pytest.approx(2.5)
+    phase=discrete.phase(image)[0]
+    assert min(abs(phase*60-k*60) for k in range(11))<=4
