@@ -12,3 +12,5 @@ data/*
 outputs/
 *.egg-info/
 .pytest_cache/
+report/build/
+report/*.local.json
