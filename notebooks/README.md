@@ -8,4 +8,6 @@ Notebook kiểm tra cấu hình E1/E2 trùng E3/E4, số ảnh các tầng cộn
 
 Không chạy lại lựa chọn tham số hoặc ảnh eval trong notebook. E4 đo tỉ lệ đọc ra d hoặc d+1 trên ảnh tổng hợp, không phải accuracy nhãn thật. Không coi 165 cặp ghép là 165 đồng hồ độc lập hoặc khẳng định quan hệ nhân quả từ E1.
 
-Đã kiểm tra chạy từ đầu đến cuối với kernel Python 3 trên macOS. Kiểm tra này xác minh notebook đọc và trình bày nhất quán kết quả đã lưu; không phải một lần chạy lại toàn bộ thực nghiệm ảnh.
+Đã kiểm tra chạy từ đầu đến cuối với kernel Python 3 trên macOS. Quang cũng xác nhận bản notebook trước cập nhật thống kê chạy trên Windows trong review PR #31. Bản cập nhật thống kê được kiểm tra lại trên macOS. Kiểm tra này xác minh notebook đọc và trình bày nhất quán kết quả đã lưu; không phải một lần chạy lại toàn bộ thực nghiệm ảnh.
+
+Mục thống kê ghép baseline và đề xuất theo tên ảnh, tính KTC Wald 95% cho hiệu accuracy và McNemar chính xác bằng scipy.stats.binomtest. Nguồn là e3_predictions.csv đã có trên main, không phụ thuộc việc PR báo cáo #33 được gộp.
