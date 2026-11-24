@@ -38,7 +38,7 @@ Hai tập có phân bố độ khó khác nhau. Dev_val có 836/2.290 ảnh half
 
 ## 9 Phương pháp cải thiện bao nhiêu
 
-Accuracy số cuối toàn eval tăng 48,25% lên 54,45%, tức 6,20 điểm phần trăm. Tầng nặng tăng 20,64% lên 28,75%, tức 8,11 điểm phần trăm. Cả chỉ số tăng 37,15% lên 42,10%, tức 4,95 điểm phần trăm. Đây là các ước lượng điểm trên tập hiện có, chưa kèm khoảng tin cậy hoặc kiểm định ý nghĩa thống kê.
+Accuracy số cuối toàn eval tăng 48,25% lên 54,45%, tức 6,20 điểm phần trăm. Tầng nặng tăng 20,64% lên 28,75%, tức 8,11 điểm phần trăm. Cả chỉ số tăng 37,15% lên 42,10%, tức 4,95 điểm phần trăm. Ghép cặp theo tên ảnh cho KTC Wald 95% của hiệu toàn eval từ 4,42 tới 7,98 điểm phần trăm, McNemar chính xác p khoảng 1,1 × 10⁻¹¹ (230 ảnh chỉ đề xuất đúng và 106 ảnh chỉ baseline đúng). Tầng nặng: KTC 4,25 tới 11,97 điểm, p khoảng 6,7 × 10⁻⁵. Tầng nhẹ tăng 0,69 điểm, KTC -2,58 tới 3,95, p khoảng 0,78 nên chưa có bằng chứng cải thiện ở mức ý nghĩa 0,05. Không suy ra tương đương hoặc không gây hại từ kết quả không có ý nghĩa. Phép so coi ảnh là đơn vị độc lập, chưa hiệu chỉnh nhiều kiểm định theo tầng và không phản ánh biến thiên chọn tham số. Công thức và thống kê trong PR #33 được đối chiếu lại từ e3_predictions.csv; notebook PR #31 đã thêm ô tính lại trực tiếp.
 
 ## 10 Phương pháp thay đổi đại lượng nào trong ảnh
 
@@ -88,3 +88,7 @@ Kết quả gợi ý kiểm tra mẫu bị nhòe và khác kiểu chữ, chiều
 - [`experiments/phuc/results/summary.csv`](../experiments/phuc/results/summary.csv) và [`e2_grid.csv`](../experiments/phuc/results/e2_grid.csv): E1/E2.
 - [`experiments/quang/README.md`](../experiments/quang/README.md), [`e3_summary.csv`](../experiments/quang/results/e3_summary.csv), [`e4_curve.csv`](../experiments/quang/results/e4_curve.csv): E3/E4.
 - [`src/wmr/roll.py`](../src/wmr/roll.py) và [`src/wmr/proposed.py`](../src/wmr/proposed.py): thước đo và cơ chế.
+
+## Slide dự phòng khi trả lời
+
+Đối chiếu bản 14 slide của PR #30 tại commit `1da0593`: slide 11 về chiều quay, slide 12 về giới hạn ảnh tổng hợp, slide 13 về ngưỡng 0,4 và slide 14 về sai số pha. Mười slide chính giữ số 1 tới 10. Kiểm lại số slide nếu nhóm chỉnh cấu trúc trước buổi bảo vệ.

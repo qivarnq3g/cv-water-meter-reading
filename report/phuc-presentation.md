@@ -11,6 +11,8 @@ Phúc trình bày cách phân tầng độ lăn, chứng cứ E1 và khảo sát
 | 6 | E2 và cấu hình chọn trên dev_val | 60 giây |
 | Chuyển phần | Giới thiệu mục đích E3/E4 cho người tiếp theo | 30 giây |
 
+Đã đối chiếu lại bộ 14 slide tại commit `1da0593`: mười slide chính giữ số 1 tới 10, bốn slide dự phòng ở 11 tới 14. Phần Phúc vẫn dùng slide 3, 5, 6. Slide 6 hiện là bảng màu chín cấu hình tại ngưỡng 0,4, còn việc dò thêm ngưỡng dưới 0,4 nằm ở slide dự phòng 13.
+
 Nguồn slide: [PR #30](https://github.com/qivarnq3g/cv-water-meter-reading/pull/30). Notebook đầy đủ E1 tới E4 nằm trong [PR #31](https://github.com/qivarnq3g/cv-water-meter-reading/pull/31), đang chờ review. Các bảng gốc đã có trên main.
 
 ## Lời nói cho slide 3
@@ -27,13 +29,13 @@ Cách đo vẫn có thể nhầm khoảng trống bên trong chữ số thành k
 
 Kết quả này hỗ trợ nhận định khó khăn tập trung ở ô cuối đang lăn. Tuy vậy, nhóm chưa có ID loại đồng hồ để kiểm soát hết yếu tố gây nhiễu, nên không kết luận độ lăn là nguyên nhân duy nhất.
 
-Phương pháp dải tuần hoàn tăng accuracy số cuối trên toàn tập từ 48,25% lên 54,45%, tức tăng 6,20 điểm phần trăm. Ở tầng nặng, mức tăng là 8,11 điểm phần trăm. Accuracy cả chuỗi tăng từ 37,15% lên 42,10%. Bốn số đầu giữ nguyên cách nhận dạng. Tầng nặng vẫn chỉ đúng 28,75%, nên phương pháp có cải thiện nhưng còn hạn chế rõ rệt.”
+Phương pháp dải tuần hoàn tăng accuracy số cuối trên toàn tập từ 48,25% lên 54,45%, tức tăng 6,20 điểm phần trăm. Ở tầng nặng, mức tăng là 8,11 điểm phần trăm. Accuracy cả chuỗi tăng từ 37,15% lên 42,10%. Bốn số đầu giữ nguyên cách nhận dạng. KTC 95% của mức tăng toàn tập từ 4,42 tới 7,98 điểm phần trăm, McNemar p khoảng 1,1 nhân 10 mũ trừ 11. Riêng tầng nhẹ p khoảng 0,78, nên chưa có bằng chứng cải thiện. Tầng nặng vẫn chỉ đúng 28,75%, nên cần xét cả mức tăng và accuracy tuyệt đối.”
 
 ## Lời nói cho slide 6
 
 “Để chọn tham số, nhóm thử 27 tổ hợp trên dev_val: ba bước bánh xe 54, 58, 62 pixel; ba bán kính dịch ngang 2, 6, 10 pixel; và ba ngưỡng nhãn 0,4, 0,5, 0,6.
 
-Tiêu chí chọn là accuracy số cuối trên toàn dev_val, không chọn theo kết quả eval. Trong lưới này, cấu hình 58 pixel, dịch ngang 6 pixel và ngưỡng 0,4 đạt cao nhất, 45,41%.
+Tiêu chí chọn là accuracy số cuối trên toàn dev_val, không chọn theo kết quả eval. Trong lưới này, cấu hình 58 pixel, dịch ngang 6 pixel và ngưỡng 0,4 đạt cao nhất, 45,41%. Slide đang hiển thị chín ô tại ngưỡng 0,4; bảng đầy đủ 27 tổ hợp có trong notebook. Nếu hỏi vì sao chọn ngưỡng ở biên, dùng slide dự phòng 13: các mức 0,3, 0,2 và 0,1 thấp hơn 0,4 trong các mức đã thử.
 
 Ví dụ giữ hai tham số còn lại: dịch ngang từ 2 lên 6 cải thiện accuracy từ 37,64% lên 45,41%, nhưng tăng tiếp lên 10 giảm còn 43,45%. Dò rộng hơn không luôn tốt hơn vì có thêm cơ hội khớp nhầm. Đây là cách diễn giải phù hợp với số liệu, chưa phải một cơ chế đã được kiểm chứng riêng.
 
@@ -57,7 +59,12 @@ Nếu máy không có kernel phù hợp, dùng các bảng CSV và hình đã l�
 | Accuracy số cuối ở tầng nặng | Baseline 20,64%, đề xuất 28,75% |
 | Accuracy cả chỉ số trên eval | Baseline 37,15%, đề xuất 42,10% |
 | Cấu hình chọn trong 27 tổ hợp | Pitch 58, dịch ngang 6, ngưỡng 0,4 |
+| KTC 95% của mức tăng số cuối toàn eval | 4,42 tới 7,98 điểm phần trăm, McNemar p khoảng 1,1 × 10⁻¹¹ |
+| KTC 95% của mức tăng ở tầng nặng | 4,25 tới 11,97 điểm phần trăm, p khoảng 6,7 × 10⁻⁵ |
+| Tầng nhẹ | +0,69 điểm phần trăm, p khoảng 0,78, chưa có bằng chứng cải thiện |
 | Bỏ pha trung gian ở tầng nặng | 21,38%, so với 28,75% khi đầy đủ |
 | Điểm gãy E4 của baseline ±2, ±6, ±10 | Pha 0,10; 0,20; 0,30 |
 
 Các số liệu E1/E2 lấy từ [`summary.csv`](../experiments/phuc/results/summary.csv) và [`e2_grid.csv`](../experiments/phuc/results/e2_grid.csv). E3/E4 lấy từ [`e3_summary.csv`](../experiments/quang/results/e3_summary.csv), [`e4_curve.csv`](../experiments/quang/results/e4_curve.csv) và [`e3_e4_report.json`](../experiments/quang/results/e3_e4_report.json).
+
+Thống kê ghép cặp từ `experiments/quang/results/e3_predictions.csv`, theo công thức của PR #33. KTC coi ảnh là đơn vị độc lập và chưa phản ánh biến thiên chọn tham số. Các phép so theo tầng chưa hiệu chỉnh nhiều kiểm định. Bốn slide dự phòng: 11 chiều quay, 12 ảnh tổng hợp, 13 ngưỡng nhãn, 14 sai số pha.
