@@ -153,7 +153,7 @@ Với ô $I$ và mẫu $T$ cùng kích thước, NCC là
 
 $$\rho(I,T)=\frac{\sum_{x,y}\left(I(x,y)-\bar I\right)\left(T(x,y)-\bar T\right)}{\sqrt{\sum_{x,y}\left(I(x,y)-\bar I\right)^2\sum_{x,y}\left(T(x,y)-\bar T\right)^2}}.$$
 
-$\rho$ đạt 1 khi $I$ là một phép biến đổi tuyến tính dương của $T$, nên NCC bất biến với độ sáng và độ tương phản của ô. Đây là lý do NCC hợp với ảnh đồng hồ có ánh sáng không đều.
+$\rho$ đạt 1 khi $I$ là một phép biến đổi tuyến tính dương của $T$, nên NCC bất biến với độ sáng và độ tương phản của ô. Tính bất biến này áp dụng cho biến đổi tuyến tính dương đồng đều trong cửa sổ, không bảo đảm bất biến với ánh sáng biến thiên theo vị trí.
 
 Gọi mặt bánh xe trải phẳng là ảnh $W$ dài $10p$, trong đó $p$ là bước bánh xe (khoảng cách dọc giữa hai chữ số liên tiếp). Ở pha $\varphi$, ô cuối cao $h$ hiện đoạn $W[(d+\varphi)p,\,(d+\varphi)p+h)$. Mẫu $T_d$ của baseline chỉ mô tả pha 0. Sau khi trượt tốt nhất trong bán kính $s$, phần chồng lên nhau giữa ô và mẫu đúng chỉ còn khoảng $h-\max(0,\varphi p-s)$ hàng; phần còn lại của ô là đầu của chữ số $d+1$, đóng vai trò nhiễu đối với $T_d$. NCC của mẫu đúng vì thế giảm dần theo $\varphi$, và khi $\varphi$ đủ lớn, một mẫu khác có hình dạng tình cờ giống tổ hợp hai nửa chữ số sẽ thắng.
 
@@ -165,7 +165,7 @@ $$y^{*}=\arg\max_{y}\,\rho\left(I,\,S[y,\,y+h)\right),\qquad r=y^{*}/p.$$
 
 Với mọi $\varphi$, nội dung ô là một đoạn liên tục của mặt bánh xe, nên luôn tồn tại một cửa sổ trên dải trùng với ô, sai khác chỉ do nhiễu, ánh sáng và khác biệt giữa các đồng hồ. Pha lăn từ chỗ là nhiễu trở thành một tham số được ước lượng. Phần nguyên của $r$ là chữ số đang ở ô, phần lẻ là pha.
 
-P còn đưa vào một ràng buộc vật lý mà baseline bỏ qua: phần dưới của $d$ luôn đi liền với phần trên của $d+1$. Hai nửa được so khớp cùng nhau trong một cửa sổ, nên một tổ hợp sai thứ tự, ví dụ phần dưới của 3 với phần trên của 7, không bao giờ là giả thuyết. Các cửa sổ gần $y=dp$ gần như trùng với mười mẫu của baseline, nên ở ảnh đứng yên P không có lý do để kém baseline.
+P còn đưa vào một ràng buộc vật lý mà baseline bỏ qua: phần dưới của $d$ luôn đi liền với phần trên của $d+1$. Hai nửa được so khớp cùng nhau trong một cửa sổ, nên một tổ hợp sai thứ tự, ví dụ phần dưới của 3 với phần trên của 7, không bao giờ là giả thuyết. Các cửa sổ gần $y=dp$ gần với mười mẫu của baseline, gợi ý P có thể giữ hiệu quả trên ảnh ít lăn. Đây là giả thuyết, không bảo đảm tương đương vì co mẫu, tập vị trí tìm kiếm và cách giải mã khác baseline.
 
 Pha liên tục được giải mã thành nhãn rời bằng
 
@@ -179,7 +179,7 @@ P dựa trên hai nội dung của học phần: so khớp mẫu bằng tương 
 
 ## 5.4. Dự đoán điểm gãy
 
-Bốn dự đoán dưới đây được công bố trong kho mã ngày 14/11/2026, trước khi P được cài đặt (15/11/2026) và trước khi có bất kỳ kết quả nào trên tập đánh giá. Ký hiệu $s=6$ là bán kính trượt dọc của baseline, $p\approx 58$ là bước bánh xe, $w\approx 5$ là bề rộng nét chữ, cùng đo trên `dev_val`.
+Bốn dự đoán dưới đây được công bố trong kho mã ngày 14/11/2026, trước khi P được cài đặt (15/11/2026) và trước khi đánh giá P trên tập đánh giá. Kết quả baseline trên eval đã được biết từ PR #19 ngày 10/11/2026 và được dùng làm bối cảnh cho các dự đoán. Vì vậy tập eval không phải tập chưa từng được quan sát trong toàn bộ quá trình phát triển. Ký hiệu $s=6$ là bán kính trượt dọc của baseline, $p\approx 58$ là bước bánh xe, $w\approx 5$ là bề rộng nét chữ, cùng đo trên `dev_val`.
 
 1. Baseline gãy ở $\varphi\approx s/p\approx 0{,}10$. Phép trượt bù được độ lăn tới $s$ điểm ảnh; sau đó phần chồng lên mẫu đúng giảm và mẫu đúng mất ưu thế. Hệ quả kiểm chứng được: tăng $s$ thì điểm gãy dời theo tỉ lệ $s/p$.
 2. P không gãy theo $\varphi$ ở tầng nhẹ và trung bình: độ chính xác chữ số cuối của P ở hai tầng này chênh nhau không quá vài điểm phần trăm, thay vì 12 điểm như baseline.
@@ -254,7 +254,7 @@ Hiệu tính bằng điểm phần trăm; KTC là khoảng tin cậy; $b$ là s�
 
 ![Hình 8.2. Độ chính xác chữ số cuối của baseline, P bỏ pha giữa hai chữ số (E3) và P đầy đủ theo tầng. Thanh lỗi là khoảng tin cậy 95% Wilson.](figures/fig-e1-e3.png){width=15cm}
 
-P cải thiện chữ số cuối 6,20 điểm phần trăm trên toàn tập. Mức tăng tập trung ở hai tầng có lăn: 7,61 điểm ở tầng trung bình và 8,11 điểm ở tầng nặng, cả hai có khoảng tin cậy không chứa 0 và McNemar $p<10^{-4}$. Ở tầng nhẹ, hiệu chỉ 0,69 điểm và không phân biệt được với 0 ($p$ = 0,78): P không giúp ở ảnh đứng yên, nhưng cũng không làm hại, đúng như lập luận về tập giả thuyết ở mục 5.2. Độ chính xác cả chỉ số tăng từ 37,15% lên 42,10%. Trung bình bốn chữ số đầu giữ nguyên 89,91%, vì P chỉ thay bước đọc ô cuối.
+P cải thiện chữ số cuối 6,20 điểm phần trăm trên toàn tập. Mức tăng tập trung ở hai tầng có lăn: 7,61 điểm ở tầng trung bình và 8,11 điểm ở tầng nặng, cả hai có khoảng tin cậy không chứa 0 và McNemar $p<10^{-4}$. Ở tầng nhẹ, hiệu chỉ 0,69 điểm và không phân biệt được với 0 ($p$ = 0,78): chưa có bằng chứng cải thiện ở tầng nhẹ với mức ý nghĩa 0,05. Khoảng tin cậy chứa cả mức giảm và mức tăng nên phép thử chưa chứng minh tương đương hoặc không kém hơn. Độ chính xác cả chỉ số tăng từ 37,15% lên 42,10%. Trung bình bốn chữ số đầu giữ nguyên 89,91%, vì P chỉ thay bước đọc ô cuối.
 
 Mức tăng vẫn chưa xóa được khoảng cách giữa các tầng: P đạt 28,75% ở tầng nặng, thấp hơn tầng nhẹ 36 điểm phần trăm. Mục 9 phân tích nguyên nhân.
 
@@ -318,13 +318,13 @@ Nếu nới lỏng giả định hướng ảnh (không có cờ `reversed`), P 
 
 ## 9.3. Giới hạn của thực nghiệm
 
-Ảnh tổng hợp của E4 ghép hai ô từ hai đồng hồ khác nhau, dùng chu kỳ bằng chiều cao ô (60 hàng) thay vì bước bánh xe thật, và ô "đứng yên" vẫn có $R\approx 0{,}18$. Kết quả E4 vì thế chỉ cho biết cơ chế, không cho số liệu tuyệt đối. Kho ô đứng yên nhỏ ở một số chữ số (7 ảnh cho chữ số 7), nên 165 cặp lặp lại cùng một số ô. Các phép so trên ảnh thật đều dùng một lần chạy duy nhất trên `eval`; khoảng tin cậy ở mục 8 chỉ phản ánh dao động do lấy mẫu ảnh, không phản ánh dao động do chọn tham số.
+Ảnh tổng hợp của E4 ghép hai ô từ hai đồng hồ khác nhau, dùng chu kỳ bằng chiều cao ô (60 hàng) thay vì bước bánh xe thật, và ô "đứng yên" vẫn có $R\approx 0{,}18$. Kết quả E4 vì thế chỉ cho biết cơ chế, không cho số liệu tuyệt đối. Kho ô đứng yên nhỏ ở một số chữ số (7 ảnh cho chữ số 7), nên 165 cặp lặp lại cùng một số ô. Các phép so trên ảnh thật đều dùng một lần chạy duy nhất trên `eval`; khoảng tin cậy ở mục 8 chỉ phản ánh dao động do lấy mẫu ảnh, không phản ánh dao động do chọn tham số. Phép tính coi ảnh là đơn vị quan sát độc lập; chưa có ID đồng hồ để điều chỉnh phụ thuộc giữa ảnh cùng đồng hồ. Các phép so theo tầng là phân tích bổ sung và chưa hiệu chỉnh nhiều kiểm định.
 
 # 10. Kết luận
 
 Nhóm xác định thách thức chính của việc đọc đồng hồ nước bánh xe số là chữ số cuối đang lăn, đo cường độ của nó trực tiếp trên ảnh bằng vị trí khe nền và chia tập đánh giá thành ba tầng. Baseline so khớp mẫu chữ số đứng yên giảm từ 64,07% ở tầng nhẹ xuống 20,64% ở tầng nặng, trong khi bốn chữ số đầu không giảm, cho thấy thách thức nằm ở ô cuối.
 
-Phương pháp đề xuất thay mười mẫu rời bằng một dải mẫu tuần hoàn mô phỏng mặt bánh xe, biến pha lăn từ nhiễu thành tham số được ước lượng. Trên 2.000 ảnh đánh giá, độ chính xác chữ số cuối tăng 6,20 điểm phần trăm (khoảng tin cậy 95% từ 4,42 đến 7,98), tập trung ở tầng trung bình (+7,61) và tầng nặng (+8,11), không đổi ở tầng nhẹ. Thí nghiệm loại bỏ thành phần cho thấy gần như toàn bộ mức tăng đến từ các pha nằm giữa hai chữ số. Trên ảnh lăn tổng hợp, baseline gãy ở pha 0,10 đến 0,30 tùy bán kính trượt, còn phương pháp đề xuất không gãy trong toàn dải khảo sát.
+Phương pháp đề xuất thay mười mẫu rời bằng một dải mẫu tuần hoàn mô phỏng mặt bánh xe, biến pha lăn từ nhiễu thành tham số được ước lượng. Trên 2.000 ảnh đánh giá, độ chính xác chữ số cuối tăng 6,20 điểm phần trăm (khoảng tin cậy 95% từ 4,42 đến 7,98), tập trung ở tầng trung bình (+7,61) và tầng nặng (+8,11), chưa có bằng chứng cải thiện ở tầng nhẹ với mức ý nghĩa 0,05. Thí nghiệm loại bỏ thành phần cho thấy gần như toàn bộ mức tăng đến từ các pha nằm giữa hai chữ số. Trên ảnh lăn tổng hợp, baseline gãy ở pha 0,10 đến 0,30 tùy bán kính trượt, còn phương pháp đề xuất không gãy trong toàn dải khảo sát.
 
 Hai trong bốn dự đoán đúng một phần, một dự đoán sai và một chưa kết luận. Dự đoán sai chỉ ra hướng đi tiếp: lỗi còn lại chủ yếu là nhầm hình dạng chữ số chứ không phải lỗi định vị pha. Ba hướng mở rộng theo thứ tự ưu tiên: (1) xác định chiều quay của bánh xe bằng chuỗi ảnh của cùng một đồng hồ hoặc bằng ảnh đã biết chiều; (2) thay mẫu trung bình bằng nhiều mẫu cho mỗi chữ số theo kiểu chữ, để giảm lỗi nhầm hình dạng; (3) ước lượng bước bánh xe riêng cho từng ảnh từ bốn chữ số đầu, thay cho một bước chung.
 
