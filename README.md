@@ -4,27 +4,40 @@ Bài tập lớn học phần Xử lý ảnh và thị giác máy tính (121036)
 
 ## Đề tài
 
-- Tác vụ: đọc chỉ số trên ảnh mặt số của đồng hồ nước cơ, loại bánh xe số.
+- Tác vụ: đọc chỉ số năm chữ số trên ảnh vùng hiển thị của đồng hồ nước cơ loại bánh xe số.
 - Dữ liệu: bộ ảnh công khai Word-Wheel Water Meter Dataset (Dryad, <https://doi.org/10.5061/dryad.7d7wm3860>).
-- Thách thức dự kiến: chữ số cuối đang lăn giữa hai số, nên trong ô số chỉ hiện một phần của mỗi chữ số.
+- Thách thức: chữ số cuối đang lăn giữa hai số, nên ô cuối chỉ hiện phần dưới của số d và phần trên của số d + 1. Cường độ thách thức đo bằng vị trí khe nền trong ô cuối và chia tập đánh giá thành ba tầng nhẹ, trung bình, nặng.
+- Baseline: so khớp mẫu từng ô bằng tương quan chéo chuẩn hóa (normalized cross-correlation, NCC).
+- Phương pháp đề xuất: ghép mười mẫu chữ số thành một dải tuần hoàn như bánh xe thật, tìm cửa sổ trên dải khớp nhất với ô cuối để ước lượng pha lăn, rồi giải mã pha thành chữ số. Bốn chữ số đầu giữ nguyên cách đọc của baseline.
 
-Tuyên bố thách thức đầy đủ (bối cảnh, lý thuyết của giải pháp, tiêu chí kiểm chứng) nằm ở `report/` sau khi nhóm chốt.
+Báo cáo đầy đủ, gồm tuyên bố thách thức, lý thuyết, thực nghiệm và thảo luận, nằm ở `report/`.
 
-## Hạn
+## Kết quả chính
 
-Hạn nộp trên Moodle: 03:00 thứ Sáu 04/12/2026. Hạn của từng việc ghi trong issue tương ứng.
+Độ chính xác trên 2.000 ảnh của tập đánh giá:
+
+| Tầng | Số ảnh | Chữ số cuối, baseline | Chữ số cuối, đề xuất | Cả chỉ số, baseline | Cả chỉ số, đề xuất |
+|---|---:|---:|---:|---:|---:|
+| Nhẹ | 437 | 64,07% | 64,76% | 51,49% | 51,95% |
+| Trung bình | 1.156 | 51,99% | 59,60% | 39,45% | 45,59% |
+| Nặng | 407 | 20,64% | 28,75% | 15,23% | 21,62% |
+| Toàn tập | 2.000 | 48,25% | 54,45% | 37,15% | 42,10% |
+
+Bảng đủ theo từng vị trí chữ số: `experiments/phuc/results/summary.csv`. Khoảng tin cậy và kiểm định ý nghĩa thống kê nằm trong báo cáo.
 
 ## Cấu trúc thư mục
 
 | Thư mục | Nội dung |
 |---|---|
-| `src/wmr/` | Mã nguồn dùng chung: đọc dữ liệu (`dataset.py`), phương pháp đối chứng (`baseline.py`), thước đo (`metrics.py`), sau này thêm phương pháp đề xuất |
-| `tests/` | Kiểm thử tự động cho `src/wmr/` |
-| `docs/` | Tài liệu giải thích mã nguồn |
-| `experiments/` | Script tái tạo bốn thí nghiệm bắt buộc E1 đến E4 và tệp mô tả phân tầng tập đánh giá |
-| `notebooks/` | Notebook ghi nhận quá trình thực nghiệm |
+| `src/wmr/` | Mã nguồn: đọc dữ liệu (`dataset.py`), baseline (`baseline.py`), phương pháp đề xuất (`proposed.py`), thước đo độ lăn và phân tầng (`roll.py`), thước đo độ chính xác (`metrics.py`), tổng hợp kết quả (`analysis.py`) |
+| `experiments/` | Script chia tập, phân tầng và bốn thí nghiệm E1 đến E4, cùng kết quả đã lưu |
+| `experiments/splits/` | Danh sách ảnh của tập phát triển và tập đánh giá |
+| `experiments/roll/` | Tệp mô tả phân tầng tập đánh giá (`eval_roll.csv`) và giải thích thước đo |
+| `notebooks/` | Notebook trình bày kết quả E1 đến E4 |
+| `tests/` | Kiểm thử tự động |
+| `docs/` | Giải thích mã nguồn baseline |
+| `data/` | Dữ liệu mẫu đi kèm kho; dữ liệu đầy đủ tải về theo `data/README.md` |
 | `report/` | Báo cáo và slide thuyết trình |
-| `data/` | Dữ liệu tải về (không đưa lên Git), xem `data/README.md` |
 
 ## Cài đặt
 
@@ -36,43 +49,59 @@ python -m venv .venv
 .venv\Scripts\python.exe -m pip install -e .
 ```
 
-Trên Linux và macOS, thay `.venv\Scripts\python.exe` bằng `.venv/bin/python`.
+Trên Linux và macOS, thay `.venv\Scripts\python.exe` bằng `.venv/bin/python`. Đã kiểm tra cài mới trên Windows với Python 3.11 và 3.13.
 
-Đã thử với Python 3.11.9 và kiểm tra cài mới trên Windows với Python 3.13.17. Có thể [chạy thử với dữ liệu mẫu](data/README.md#dữ-liệu-mẫu) ngay sau khi cài đặt. Để chạy thí nghiệm, tải dữ liệu đầy đủ theo [hướng dẫn tải và giải nén](data/README.md#tải-về). Nếu dữ liệu nằm ở thư mục khác, đặt biến môi trường `WMR_DATA_ROOT` trỏ tới thư mục chứa `Word-Wheel_Water_Meter_Dataset`, hoặc truyền `--data-root` cho từng script.
+## Chạy thử trên dữ liệu mẫu
+
+Không cần tải bộ dữ liệu đầy đủ. Lệnh dưới đây đọc 4 ảnh trong `data/sample/` bằng cả baseline và phương pháp đề xuất, dùng mẫu chữ số và cấu hình đã chọn trên tập phát triển (`experiments/phuc/results/templates.npy`, `selected.json`):
+
+```powershell
+.venv\Scripts\python.exe experiments/run_sample.py
+```
+
+Kết quả in ra màn hình và ghi vào `outputs/sample_predictions.csv`:
+
+```
+name       reading    roll tier    baseline  proposed
+test5.jpg  00001     0.475 medium  00001     00001
+test6.jpg  00001     0.169 light   07603     07603
+test7.jpg  00001     0.881 heavy   00097     00097
+test8.jpg  00001     0.983 heavy   00991     00991
+```
+
+Cột `roll` là thước đo độ lăn, `tier` là tầng tương ứng. Bốn ảnh mẫu thuộc tập đánh giá, và dự đoán trùng với dòng tương ứng trong `experiments/phuc/results/predictions.csv` của lần chạy đầy đủ (có kiểm thử tự động cho điều này). Ảnh `test6.jpg` bị baseline đọc sai cả bốn chữ số đầu nên phương pháp đề xuất cũng sai theo; hai ảnh lăn nặng cho thấy chữ số cuối vẫn là phần khó nhất. Bốn ảnh chỉ dùng để kiểm tra pipeline chạy được, không dùng để đánh giá.
+
+Cách đọc nhãn mẫu và áp dụng cờ xoay: `data/README.md`.
+
+## Tái lập E1 đến E4 trên dữ liệu đầy đủ
+
+Tải và giải nén bộ dữ liệu theo [hướng dẫn](data/README.md#tải-về). Mặc định các script đọc dữ liệu trong `data/`. Nếu dữ liệu nằm ở thư mục khác, đặt biến môi trường `WMR_DATA_ROOT` trỏ tới thư mục chứa `Word-Wheel_Water_Meter_Dataset`, hoặc truyền `--data-root` cho từng script.
+
+Chạy lần lượt từ thư mục gốc:
+
+| Bước | Lệnh | Kết quả |
+|---|---|---|
+| Chia tập | `.venv\Scripts\python.exe experiments/make_splits.py` | `experiments/splits/*.csv` |
+| Phân tầng tập đánh giá | `.venv\Scripts\python.exe experiments/make_roll_tiers.py` | `experiments/roll/eval_roll.csv`, `report/figures/roll-tiers.png` |
+| E2, chọn tham số trên `dev_val` | `.venv\Scripts\python.exe experiments/run_phuc.py --stage tune` | `experiments/phuc/results/e2_grid.csv`, `selected.json`, `templates.npy` |
+| E1, so sánh trên tập đánh giá theo tầng | `.venv\Scripts\python.exe experiments/run_phuc.py --stage evaluate` | `experiments/phuc/results/predictions.csv`, `summary.csv`, `e1_*.csv` |
+| E3 loại bỏ thành phần, E4 điểm gãy | `.venv\Scripts\python.exe experiments/run_e3_e4.py` | `experiments/quang/results/` |
+
+E2 chạy trước E1 vì cấu hình dùng cho tập đánh giá phải được chốt trên tập phát triển. Bước E1 kiểm tra mã băm của các tệp chia tập so với lúc chọn tham số và dừng nếu có thay đổi. Các lệnh ghi đè kết quả đã lưu trong kho; lần chạy lại ngày 22/11/2026 trên bản sao sạch cho các tệp CSV trùng với bản trong kho.
+
+Giải thích chi tiết từng phần: `experiments/roll/README.md` (thước đo độ lăn), `experiments/phuc/README.md` (E1, E2), `experiments/quang/README.md` (E3, E4), `docs/baseline-walkthrough.md` (baseline). Chỉ chạy baseline trên một tập: `.venv\Scripts\python.exe experiments/run_baseline.py`.
 
 ## Tập phát triển và tập đánh giá
 
-Chỉ dùng phần đồng hồ năm chữ số. Tập đánh giá là tập test gốc của bộ dữ liệu, tập phát triển là tập train gốc, chia tiếp thành hai phần theo mã băm của tên ảnh nên lần chạy nào cũng ra cùng kết quả. Danh sách ảnh nằm trong `experiments/splits/`.
+Chỉ dùng phần đồng hồ năm chữ số. Tập đánh giá là tập test gốc của bộ dữ liệu. Tập phát triển là tập train gốc, chia tiếp thành hai phần theo mã băm của tên ảnh nên lần chạy nào cũng ra cùng kết quả.
 
-| Tập | Tệp | Số ảnh | Trong đó chữ số cuối đang lăn (half-word) |
-|---|---|---|---|
+| Tập | Tệp | Số ảnh | Trong đó có cờ half-word |
+|---|---|---:|---:|
 | Phát triển, phần dựng mẫu | `dev_fit.csv` | 9.577 | 3.399 |
 | Phát triển, phần chọn tham số | `dev_val.csv` | 2.290 | 836 |
 | Đánh giá | `eval.csv` | 2.000 | 355 |
 
-Tạo lại danh sách:
-
-```
-python experiments/make_splits.py
-```
-
-## Baseline so khớp mẫu
-
-Mẫu của mỗi chữ số là ảnh trung bình các ô số ở bốn vị trí đầu, lấy từ ảnh không gắn cờ half-word của `dev_fit`. Khi đọc, ảnh được cân bằng histogram, chia đều thành năm ô, mỗi ô so với mười mẫu bằng tương quan chéo chuẩn hóa trong phạm vi lệch 6 điểm ảnh, chọn mẫu có điểm cao nhất. Giải thích mã nguồn từng dòng: `docs/baseline-walkthrough.md`.
-
-```
-python experiments/run_baseline.py
-```
-
-Lệnh in bảng dưới đây và ghi kết quả từng ảnh vào `outputs/baseline_eval.csv`. Độ chính xác trên tập đánh giá, đo ngày 10/11/2026:
-
-| Nhóm ảnh | Số ảnh | Số 1 | Số 2 | Số 3 | Số 4 | Số 5 | Cả chỉ số |
-|---|---|---|---|---|---|---|---|
-| Tất cả | 2.000 | 0,964 | 0,908 | 0,871 | 0,854 | 0,482 | 0,371 |
-| Không half-word | 1.645 | 0,962 | 0,908 | 0,866 | 0,851 | 0,559 | 0,431 |
-| Half-word | 355 | 0,972 | 0,907 | 0,893 | 0,865 | 0,127 | 0,096 |
-
-Bốn chữ số đầu gần như không đổi giữa hai nhóm, còn chữ số cuối tụt từ 0,559 xuống 0,127 ở ảnh half-word. Hai nhóm này mới chia theo cờ có sẵn trong nhãn, chưa phải phân tầng theo cường độ mà đề yêu cầu.
+Cờ half-word có sẵn trong nhãn của bộ dữ liệu và chỉ dùng để đối chiếu. Phân tầng dùng thước đo độ lăn tính từ ảnh.
 
 ## Kiểm thử
 
@@ -81,21 +110,9 @@ Bốn chữ số đầu gần như không đổi giữa hai nhóm, còn chữ s�
 .venv\Scripts\python.exe -m pytest
 ```
 
-## Cách làm việc
-
-1. Mỗi việc là một issue, có người phụ trách và hạn.
-2. Không đẩy thẳng lên `main`. Tạo nhánh từ `main`, đặt tên theo số issue, ví dụ `12-roll-metric`.
-3. Mở pull request, dòng đầu của phần mô tả ghi `Closes #12.` để issue tự đóng khi gộp.
-4. Một thành viên khác duyệt rồi mới gộp.
-5. Đẩy nhánh lên mỗi tối, kể cả khi chưa xong.
-
 ## Quy tắc thực nghiệm theo đề
 
 - Mọi so sánh dùng cùng dữ liệu và cùng thước đo, báo cáo theo từng tầng cường độ của thách thức, kèm số ảnh mỗi tầng.
 - Tham số chọn trên tập phát triển, không tinh chỉnh trên tập đánh giá.
 - Hàm hoặc mô hình dựng sẵn chỉ dùng làm tiện ích hoặc baseline, không dùng làm thành phần xử lý thách thức.
 - Mọi nguồn tham khảo trích dẫn theo chuẩn IEEE.
-
-## Nhánh thực nghiệm của Phúc
-
-Pipeline E1/E2 và phương pháp dải bánh xe: xem `experiments/phuc/README.md`. Notebook: `notebooks/phuc_experiments.ipynb`. Đã chạy trên dữ liệu thật; xem `report/phuc-results.md` và `experiments/phuc/results/`.

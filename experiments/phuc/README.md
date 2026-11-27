@@ -1,6 +1,6 @@
 # Phần thực hiện của Phúc
 
-Nhánh `phuc-experiments` kế thừa PR #21 (#3). Mã phương pháp bám đề xuất trong PR #22, chưa coi là phương pháp đã được cả nhóm duyệt.
+Nhánh `phuc-experiments` kế thừa PR #21 (#3). PR #21, #22, #23 và #24 đã được gộp; notebook hiện tổng hợp đủ kết quả E1 tới E4.
 
 ## Chạy
 
@@ -23,7 +23,7 @@ python experiments/run_phuc.py --stage evaluate --data-root /path/to/data
 - #6 E1: `predictions.csv`, `summary.csv` (accuracy từng số/cả chuỗi, theo tầng), `e1_controls.csv` (độ sáng, tương phản, Laplacian variance, chữ số đúng, half-word).
 - #8: `src/wmr/proposed.py`; dải tuần hoàn 0 tới 9, tìm pha bằng NCC; `enabled=False` trả đúng baseline cùng max_shift. Khi báo cáo E3 phải dùng cùng max_shift với cấu hình đã chọn.
 - #11 E2: grid theo tầng trên dev_val, cấu hình đã chọn, ảnh raw/equalized/ô cuối/mẫu khớp. Đã có kết quả và nhận xét trong báo cáo.
-- #16: notebook đọc E1/E2 và kết quả E3/E4 của Quang khi có; không tự tạo số liệu thay Quang.
+- #16: notebook trình bày đủ E1 tới E4 từ bảng gốc của Phúc và Quang, kèm đồ thị, nhận xét và kiểm tra nhất quán. Xem `notebooks/README.md`.
 
 ## Giới hạn cần công bố
 

@@ -21,7 +21,7 @@ Mẫu chữ số lấy từ 6.178 ảnh dev_fit không half-word. Dò 27 cấu h
 
 Baseline số cuối giảm từ 64,07% xuống 20,64% giữa tầng nhẹ và nặng (43,43 điểm phần trăm), trong khi bốn số đầu không giảm tương ứng (88,62% và 90,79%). Đây là chứng cứ thách thức tập trung ở ô cuối. Độ sáng trung bình tăng 168,97→173,00; tương phản 38,95→39,98; Laplacian variance 605,83→653,46. Tầng nặng không tối hơn hoặc mờ hơn theo các proxy này. Tuy vậy chưa có kiểm định tương đương và không có ID loại đồng hồ: không tuyên bố đã loại bỏ mọi yếu tố gây nhiễu. Bảng theo chữ số đúng nằm ở e1_by_digit.csv để kiểm tra ảnh hưởng phân bố chữ số.
 
-P cải thiện số cuối 6,20 điểm phần trăm toàn tập, 8,11 điểm ở tầng nặng; cả chuỗi tăng 4,95 điểm. Bốn số đầu giữ nguyên từng dự đoán vì chỉ thay bước nhận dạng ô cuối. Các giá trị là ước lượng điểm, chưa có khoảng tin cậy.
+P cải thiện số cuối 6,20 điểm phần trăm toàn tập, 8,11 điểm ở tầng nặng; cả chuỗi tăng 4,95 điểm. Bốn số đầu giữ nguyên từng dự đoán vì chỉ thay bước nhận dạng ô cuối. Tính ghép cặp từ e3_predictions.csv cho mức tăng số cuối toàn eval 6,20 điểm phần trăm (KTC Wald 95% 4,42 tới 7,98, McNemar chính xác p khoảng 1,1 × 10⁻¹¹). Tầng nặng tăng 8,11 điểm (KTC 4,25 tới 11,97, p khoảng 6,7 × 10⁻⁵). Tầng nhẹ tăng 0,69 điểm (KTC -2,58 tới 3,95, p khoảng 0,78), chưa có bằng chứng cải thiện ở mức ý nghĩa 0,05. Notebook tính lại trực tiếp theo tên ảnh. Các phép so theo tầng chưa hiệu chỉnh nhiều kiểm định, KTC coi ảnh là đơn vị độc lập và không bao gồm biến thiên chọn tham số.
 
 Kết quả cũng không ủng hộ toàn bộ dự đoán trong PR #22: P vẫn giảm từ 64,76% ở tầng nhẹ xuống 28,75% ở tầng nặng. Chỉ 223/911 lỗi số cuối của P lệch một số (24,48%), nên chưa đúng dự đoán phần lớn lỗi là chữ số kề bên. Không sửa dự đoán sau khi xem eval. Mẫu trung bình bị nhòe, kiểu chữ khác nhau, bước bánh xe chung và chiều quay cố định là những khả năng cần kiểm tra ở thí nghiệm phát triển tiếp theo, chưa phải nguyên nhân đã chứng minh.
 
@@ -63,6 +63,6 @@ Nguồn chung cho Hình E1a-E1c: chỉ số đúng và dự đoán baseline lấ
 
 Ảnh trung gian raw, cân bằng histogram, ô cuối và cửa sổ dải khớp đặt cạnh nhau trong e2_intermediates.png. Ba ảnh chọn bằng vị trí cố định trong dev_val, không lựa theo kết quả eval.
 
-## Notebook và phần còn lại
+## Notebook E1 tới E4
 
-Notebook phuc_experiments.ipynb tổng hợp E1/E2 từ CSV thật, có đồ thị và nhận xét. E3/E4 vẫn chờ kết quả của Quang; notebook báo rõ phần chưa có. Vì thế #16 chưa được coi là hoàn tất toàn bộ E1 tới E4. Mã P là bản thực hiện để nhóm review, chưa thay cho việc cả nhóm chốt PR #22. Không đóng issue hay gộp PR tự động.
+Notebook `notebooks/phuc_experiments.ipynb` đã tích hợp E3/E4 của Quang từ PR #24. Có bảng, đồ thị và nhận xét từng thí nghiệm; phân biệt accuracy trên ảnh thật với tỉ lệ đọc ra d hoặc d+1 trên ảnh tổng hợp. Kiểm tra 27 cấu hình, 11 mức pha, 2.000 ảnh eval, cấu hình E1/E3 và điểm gãy khớp JSON gốc. Cách chạy ở `notebooks/README.md`. Không chọn lại tham số hoặc chạy lại eval trong notebook.
