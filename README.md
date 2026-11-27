@@ -116,3 +116,15 @@ Cờ half-word có sẵn trong nhãn của bộ dữ liệu và chỉ dùng đ�
 - Tham số chọn trên tập phát triển, không tinh chỉnh trên tập đánh giá.
 - Hàm hoặc mô hình dựng sẵn chỉ dùng làm tiện ích hoặc baseline, không dùng làm thành phần xử lý thách thức.
 - Mọi nguồn tham khảo trích dẫn theo chuẩn IEEE.
+
+## Kiểm tra bản bàn giao
+
+Sau khi giải nén gói nộp, chạy từ thư mục gốc bằng Python đã cài các thư viện:
+
+```sh
+python experiments/check_submission.py
+python experiments/run_sample.py
+python -m pytest
+```
+
+Lệnh đầu kiểm tra tệp cần thiết, ghép cặp dự đoán, 27 cấu hình E2, 54 ô quét lệch bước E4, hình báo cáo và cấu trúc bộ 14 slide. Mã băm các tệp được ghi vào `outputs/submission_check.json`. Notebook được kiểm tra riêng bằng Restart & Run All. Kiểm tra nguồn không thay thế việc xem bản PDF/slide, điền thông tin bìa hoặc xác nhận nộp Moodle.

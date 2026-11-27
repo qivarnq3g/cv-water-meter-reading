@@ -38,7 +38,7 @@ Hai tập có phân bố độ khó khác nhau. Dev_val có 836/2.290 ảnh half
 
 ## 9 Phương pháp cải thiện bao nhiêu
 
-Accuracy số cuối toàn eval tăng 48,25% lên 54,45%, tức 6,20 điểm phần trăm. Tầng nặng tăng 20,64% lên 28,75%, tức 8,11 điểm phần trăm. Cả chỉ số tăng 37,15% lên 42,10%, tức 4,95 điểm phần trăm. Ghép cặp theo tên ảnh cho KTC Wald 95% của hiệu toàn eval từ 4,42 tới 7,98 điểm phần trăm, McNemar chính xác p khoảng 1,1 × 10⁻¹¹ (230 ảnh chỉ đề xuất đúng và 106 ảnh chỉ baseline đúng). Tầng nặng: KTC 4,25 tới 11,97 điểm, p khoảng 6,7 × 10⁻⁵. Tầng nhẹ tăng 0,69 điểm, KTC -2,58 tới 3,95, p khoảng 0,78 nên chưa có bằng chứng cải thiện ở mức ý nghĩa 0,05. Không suy ra tương đương hoặc không gây hại từ kết quả không có ý nghĩa. Phép so coi ảnh là đơn vị độc lập, chưa hiệu chỉnh nhiều kiểm định theo tầng và không phản ánh biến thiên chọn tham số. Công thức và thống kê trong PR #33 được đối chiếu lại từ e3_predictions.csv; notebook PR #31 đã thêm ô tính lại trực tiếp.
+Accuracy số cuối toàn eval tăng 48,25% lên 54,45%, tức 6,20 điểm phần trăm. Tầng nặng tăng 20,64% lên 28,75%, tức 8,11 điểm phần trăm. Cả chỉ số tăng 37,15% lên 42,10%, tức 4,95 điểm phần trăm. Ghép cặp theo tên ảnh cho KTC Wald 95% của hiệu toàn eval từ 4,42 tới 7,98 điểm phần trăm, McNemar chính xác p khoảng 1,1 × 10⁻¹¹ (230 ảnh chỉ đề xuất đúng và 106 ảnh chỉ baseline đúng). Tầng nặng: KTC 4,25 tới 11,97 điểm, p khoảng 6,7 × 10⁻⁵. Tầng nhẹ tăng 0,69 điểm, KTC -2,58 tới 3,95, p khoảng 0,78 nên chưa có bằng chứng cải thiện ở mức ý nghĩa 0,05. Không suy ra tương đương hoặc không gây hại từ kết quả không có ý nghĩa. Phép so coi ảnh là đơn vị độc lập, chưa hiệu chỉnh nhiều kiểm định theo tầng và không phản ánh biến thiên chọn tham số. Công thức và thống kê trong report/make_figures.py được đối chiếu lại từ e3_predictions.csv; notebook notebooks/phuc_experiments.ipynb đã thêm ô tính lại trực tiếp.
 
 ## 10 Phương pháp thay đổi đại lượng nào trong ảnh
 
@@ -60,7 +60,7 @@ Trong miền pha tổng hợp đã khảo sát, tỉ lệ đọc ra d hoặc d+1
 
 ## 14 Dự đoán nào được ủng hộ và dự đoán nào chưa đúng
 
-Điểm gãy baseline dịch đúng chiều khi tăng bán kính nhưng xuất hiện muộn hơn s/p. Đề xuất giữ trên 50% theo tiêu chí tổng hợp trong miền khảo sát, nhưng không phẳng theo tầng trên ảnh thật. Dự đoán phần lớn lỗi lệch một chữ số không được ủng hộ: tầng nặng chỉ 73/290 lỗi, khoảng 25,17%. Dự đoán chiều cao lệch 9% chưa kết luận được vì nhóm xa ở tầng nặng chỉ có 18 ảnh và kết quả quan sát ngược chiều dự đoán.
+Điểm gãy baseline dịch đúng chiều khi tăng bán kính nhưng xuất hiện muộn hơn s/p. Đề xuất giữ trên 50% theo tiêu chí tổng hợp trong miền khảo sát, nhưng không phẳng theo tầng trên ảnh thật. Dự đoán phần lớn lỗi lệch một chữ số không được ủng hộ: tầng nặng chỉ 73/290 lỗi, khoảng 25,17%. Kiểm tra ảnh thật về chiều cao vẫn chưa kết luận được vì chỉ 18 ảnh tầng nặng thuộc nhóm xa. Phép quét lệch bước tổng hợp bổ sung cho thấy suy giảm định vị sớm hơn khi bước dài hơn từ 10%, nên báo cáo cập nhật dự đoán 4 thành đúng một phần, không coi ngưỡng 9% đã được xác nhận chính xác.
 
 ## 15 Chiều quay của bánh xe đã xác định được chưa
 
@@ -92,3 +92,9 @@ Kết quả gợi ý kiểm tra mẫu bị nhòe và khác kiểu chữ, chiều
 ## Slide dự phòng khi trả lời
 
 Đối chiếu bản 14 slide của PR #30 tại commit `1da0593`: slide 11 về chiều quay, slide 12 về giới hạn ảnh tổng hợp, slide 13 về ngưỡng 0,4 và slide 14 về sai số pha. Mười slide chính giữ số 1 tới 10. Kiểm lại số slide nếu nhóm chỉnh cấu trúc trước buổi bảo vệ.
+
+## 20 Kết quả E4 bổ sung thay đổi kết luận gì
+
+Phép quét trên 165 bộ ba giữ nguyên cấu hình mô hình và thay bước thật từ -20% tới +20%. Nếu lấy trung vị sai số pha >0,25 làm tiêu chí, P gãy khoảng pha 0,4 khi bước khớp, 0,3 khi bước dài hơn từ 10%, và cả ở pha nhỏ khi bước ngắn hơn từ 15%. Tiêu chí 0,25 được chọn sau khi xem phép quét ban đầu, nên cần gọi là thăm dò.
+
+Theo tiêu chí định trước đọc ra d hoặc d+1 dưới 50%, lần đầu quan sát ở +15% và -20%. Giá trị 49,09% tại +15% có KTC 41,6 tới 56,7%, chưa phân biệt chắc chắn với 50%. Phép co giãn đồng thời thay bước và cỡ chữ; các bộ ba dùng lại ô nguồn. Dự đoán 4 chuyển thành đúng một phần nhờ phép tổng hợp, còn kết quả ảnh thật vẫn chưa kết luận.
