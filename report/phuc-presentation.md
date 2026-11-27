@@ -13,7 +13,7 @@ Phúc trình bày cách phân tầng độ lăn, chứng cứ E1 và khảo sát
 
 Đã đối chiếu lại bộ 14 slide tại commit `1da0593`: mười slide chính giữ số 1 tới 10, bốn slide dự phòng ở 11 tới 14. Phần Phúc vẫn dùng slide 3, 5, 6. Slide 6 hiện là bảng màu chín cấu hình tại ngưỡng 0,4, còn việc dò thêm ngưỡng dưới 0,4 nằm ở slide dự phòng 13.
 
-Nguồn slide: [PR #30](https://github.com/qivarnq3g/cv-water-meter-reading/pull/30). Notebook đầy đủ E1 tới E4 nằm trong [PR #31](https://github.com/qivarnq3g/cv-water-meter-reading/pull/31), đang chờ review. Các bảng gốc đã có trên main.
+Nguồn slide: [PR #30](https://github.com/qivarnq3g/cv-water-meter-reading/pull/30). Notebook đầy đủ E1 tới E4 ở [`notebooks/phuc_experiments.ipynb`](../notebooks/phuc_experiments.ipynb). Các bảng gốc đã có trên main.
 
 ## Lời nói cho slide 3
 
@@ -47,7 +47,7 @@ Sau khi chọn, nhóm giữ nguyên cấu hình và mẫu cho đánh giá ảnh 
 
 ## Nếu cần trình bày notebook
 
-Mở [`notebooks/phuc_experiments.ipynb`](../notebooks/phuc_experiments.ipynb) trên nhánh PR #31. Chạy Restart & Run All trước buổi tập, sau đó dùng các mục E1, E2, E3 và E4 để chuyển tới bảng tương ứng. Không chạy lại tune/evaluate khi đang thuyết trình vì các lệnh đó cần bộ ảnh đầy đủ và ghi lại kết quả.
+Mở [`notebooks/phuc_experiments.ipynb`](../notebooks/phuc_experiments.ipynb) trong repo. Chạy Restart & Run All trước buổi tập, sau đó dùng các mục E1, E2, E3 và E4 để chuyển tới bảng tương ứng. Không chạy lại tune/evaluate khi đang thuyết trình vì các lệnh đó cần bộ ảnh đầy đủ và ghi lại kết quả.
 
 Nếu máy không có kernel phù hợp, dùng các bảng CSV và hình đã lưu trong repo. Notebook chỉ đọc kết quả và kiểm tra nhất quán, không phải bản ghi một lần chạy lại toàn bộ ảnh trong buổi trình bày.
 
@@ -67,4 +67,8 @@ Nếu máy không có kernel phù hợp, dùng các bảng CSV và hình đã l�
 
 Các số liệu E1/E2 lấy từ [`summary.csv`](../experiments/phuc/results/summary.csv) và [`e2_grid.csv`](../experiments/phuc/results/e2_grid.csv). E3/E4 lấy từ [`e3_summary.csv`](../experiments/quang/results/e3_summary.csv), [`e4_curve.csv`](../experiments/quang/results/e4_curve.csv) và [`e3_e4_report.json`](../experiments/quang/results/e3_e4_report.json).
 
-Thống kê ghép cặp từ `experiments/quang/results/e3_predictions.csv`, theo công thức của PR #33. KTC coi ảnh là đơn vị độc lập và chưa phản ánh biến thiên chọn tham số. Các phép so theo tầng chưa hiệu chỉnh nhiều kiểm định. Bốn slide dự phòng: 11 chiều quay, 12 ảnh tổng hợp, 13 ngưỡng nhãn, 14 sai số pha.
+Thống kê ghép cặp từ `experiments/quang/results/e3_predictions.csv`, theo công thức trong report/make_figures.py. KTC coi ảnh là đơn vị độc lập và chưa phản ánh biến thiên chọn tham số. Các phép so theo tầng chưa hiệu chỉnh nhiều kiểm định. Bốn slide dự phòng: 11 chiều quay, 12 ảnh tổng hợp, 13 ngưỡng nhãn, 14 sai số pha.
+
+## Kết quả E4 bổ sung khi hỏi đáp
+
+Giải thích riêng hai tiêu chí gãy. Theo định vị pha >0,25 (tiêu chí thăm dò), pha gãy khoảng 0,4 khi bước khớp và sớm về 0,3 khi bước dài hơn từ 10%. Theo tỷ lệ đọc d hoặc d+1 dưới 50% (tiêu chí định trước), quan sát đầu tiên ở +15% và -20%, nhưng KTC tại +15% còn chứa 50%. Không khẳng định ngưỡng gãy vật lý 9% đã được chứng minh. Báo cáo cập nhật dự đoán 4 thành đúng một phần dựa trên tổng hợp; kiểm tra ảnh thật vẫn chưa kết luận.
