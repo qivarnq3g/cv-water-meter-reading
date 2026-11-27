@@ -18,7 +18,7 @@ Kết quả ghi vào `experiments/quang/results/`, mất khoảng một phút.
 
 | Độ chính xác chữ số cuối | Toàn tập | Nhẹ | Trung bình | Nặng |
 |---|---:|---:|---:|---:|
-| Baseline (`enabled=False`) | 48,25% | 64,07% | 52,00% | 20,64% |
+| Baseline (`enabled=False`) | 48,25% | 64,07% | 51,99% | 20,64% |
 | Bỏ pha giữa hai chữ số (`continuous=False`) | 48,95% | 65,90% | 52,25% | 21,38% |
 | Phương pháp đề xuất | 54,45% | 64,76% | 59,60% | 28,75% |
 
