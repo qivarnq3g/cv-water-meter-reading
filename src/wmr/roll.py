@@ -61,3 +61,16 @@ def roll_tier(score: float, cuts: tuple[float, float] = RollConfig.cuts) -> str:
     if score < cuts[1]:
         return TIERS[1]
     return TIERS[2]
+
+
+def rolled_window(cells: list[np.ndarray], period: float, phi: float) -> np.ndarray:
+    height, width = cells[1].shape
+    stack = np.vstack(cells).astype(np.float32)
+    size = int(round(len(cells) * period))
+    if size != len(stack):
+        stack = cv2.resize(stack, (width, size), interpolation=cv2.INTER_LINEAR)
+    step = size / len(cells)
+    start = int(round(step * (1 + 0.5 + phi) - height / 2))
+    if start < 0 or start + height > size:
+        raise ValueError("rolled window falls outside the stacked cells")
+    return stack[start:start + height]

@@ -10,7 +10,7 @@ from wmr.analysis import summarize
 from wmr.baseline import BaselineConfig, extract_cell, match_scores, preprocess
 from wmr.dataset import default_data_root, load_image, read_split
 from wmr.proposed import WheelConfig, WheelReader
-from wmr.roll import TIERS, ink_mask, last_digit_roll, roll_tier
+from wmr.roll import TIERS, ink_mask, last_digit_roll, roll_tier, rolled_window
 
 SPLITS = Path('experiments/splits')
 PHUC = Path('experiments/phuc/results')
@@ -105,8 +105,7 @@ def direction_check(args, templates, config):
                 forward_wins=float((scores[:, 0] > scores[:, 1]).mean()))
 
 
-def synthetic(args, templates, config):
-    rng = np.random.default_rng(args.seed)
+def still_pool(args):
     pool = {d: [] for d in range(10)}
     for sample in read_split(SPLITS / 'dev_val.csv'):
         if sample.is_half_word:
@@ -114,6 +113,11 @@ def synthetic(args, templates, config):
         image = load_image(args.data_root, sample)
         if last_digit_roll(image) < args.still_roll:
             pool[int(sample.reading[-1])].append(image)
+    return pool
+
+
+def synthetic(args, templates, config, pool):
+    rng = np.random.default_rng(args.seed)
     anchors = [(d, im) for d in range(10) for im in pool[d] if pool[(d + 1) % 10]]
     picks = rng.choice(len(anchors), size=min(args.pairs, len(anchors)), replace=False)
     reader = WheelReader(templates, config)
@@ -163,6 +167,63 @@ def synthetic(args, templates, config):
                 break_level=args.break_level, first_phi_below_break_level=breaks), curve
 
 
+def pitch_sweep(args, templates, config, pool):
+    rng = np.random.default_rng(args.seed)
+    anchors = [(d, im) for d in range(10) for im in pool[d] if pool[(d - 1) % 10] and pool[(d + 1) % 10]]
+    picks = rng.choice(len(anchors), size=min(args.pairs, len(anchors)), replace=False)
+    reader = WheelReader(templates, config)
+    phases = np.round(np.arange(0, args.max_phase + 1e-9, args.pitch_phase_step), 4)
+    mismatches = np.round(np.arange(-args.max_mismatch, args.max_mismatch + 1e-9, args.mismatch_step), 4)
+    rows = []
+    for triple, pick in enumerate(picks):
+        digit, image = anchors[pick]
+        neighbours = []
+        for other in ((digit - 1) % 10, (digit + 1) % 10):
+            candidates = pool[other]
+            neighbours.append(candidates[rng.integers(len(candidates))])
+        middle = extract_cell(image, 5, 4).astype(np.float32)
+        cells = []
+        for source in (neighbours[0], image, neighbours[1]):
+            cell = extract_cell(source, 5, 4).astype(np.float32)
+            cells.append((cell - cell.mean()) / (cell.std() + 1e-6) * middle.std() + middle.mean())
+        start = image.shape[1] // 5 * 4
+        for mismatch in mismatches:
+            period = config.pitch * (1 + mismatch)
+            for phi in phases:
+                rolled = image.copy()
+                window = rolled_window(cells, period, float(phi))
+                rolled[:, start:start + window.shape[1]] = np.clip(window, 0, 255).astype(np.uint8)
+                estimate, _ = reader.phase(rolled)
+                rows.append(dict(triple=triple, digit=digit, mismatch=float(mismatch) + 0.0, phi=float(phi),
+                                 proposed=decode(estimate, config.threshold),
+                                 phase_error=float((estimate - (digit + phi) + 5) % 10 - 5),
+                                 baseline_s6=last_digit(rolled, templates, 6)))
+    write_csv(args.output_dir / 'e4_pitch_synthetic.csv', rows)
+    curve = []
+    for mismatch in mismatches:
+        for phi in phases:
+            group = [r for r in rows if r['mismatch'] == mismatch and r['phi'] == phi]
+            record = dict(mismatch=float(mismatch) + 0.0, phi=float(phi), n=len(group),
+                          proposed_phase_median=float(np.median([abs(r['phase_error']) for r in group])))
+            for method in ('proposed', 'baseline_s6'):
+                record[f'{method}_reads_lower_or_next'] = float(np.mean(
+                    [r[method] in (r['digit'], (r['digit'] + 1) % 10) for r in group]))
+            curve.append(record)
+    write_csv(args.output_dir / 'e4_pitch_curve.csv', curve)
+    worst = {}
+    for mismatch in mismatches:
+        rates = [c['proposed_reads_lower_or_next'] for c in curve if c['mismatch'] == mismatch]
+        worst[float(mismatch) + 0.0] = dict(min_rate=float(min(rates)), phi_at_min=float(phases[int(np.argmin(rates))]))
+    breaks = {}
+    for side, sign in (('shorter', -1), ('longer', 1)):
+        below = [m for m in sorted(worst, key=abs) if np.sign(m) == sign and worst[m]['min_rate'] < args.break_level]
+        breaks[side] = below[0] if below else None
+    report = dict(triples=len(picks), break_level=args.break_level, worst_phase_by_mismatch=worst,
+                  first_mismatch_below_break_level=breaks)
+    (args.output_dir / 'e4_pitch_report.json').write_text(json.dumps(report, indent=2), encoding='utf-8')
+    return report
+
+
 def plot(curve, out, shifts):
     import matplotlib
     matplotlib.use('Agg')
@@ -200,17 +261,27 @@ def main():
     ap.add_argument('--shifts', type=int, nargs='+', default=[2, 6, 10])
     ap.add_argument('--break-level', type=float, default=0.5)
     ap.add_argument('--height-tolerance', type=float, default=0.09)
+    ap.add_argument('--max-mismatch', type=float, default=0.2)
+    ap.add_argument('--mismatch-step', type=float, default=0.05)
+    ap.add_argument('--pitch-phase-step', type=float, default=0.1)
+    ap.add_argument('--stages', nargs='+', choices=['e3', 'synthetic', 'pitch'], default=['e3', 'synthetic', 'pitch'])
     ap.add_argument('--seed', type=int, default=0)
     args = ap.parse_args()
     args.output_dir.mkdir(parents=True, exist_ok=True)
     templates, config = frozen()
     report = dict(config=asdict(config))
-    rows, heights = e3(args, templates, config)
-    report['prediction4'] = prediction4(rows, heights, args)
-    report['direction'] = direction_check(args, templates, config)
-    report['synthetic'], curve = synthetic(args, templates, config)
-    plot(curve, args.output_dir, args.shifts)
-    (args.output_dir / 'e3_e4_report.json').write_text(json.dumps(report, indent=2), encoding='utf-8')
+    if 'e3' in args.stages:
+        rows, heights = e3(args, templates, config)
+        report['prediction4'] = prediction4(rows, heights, args)
+        report['direction'] = direction_check(args, templates, config)
+    pool = still_pool(args) if {'synthetic', 'pitch'} & set(args.stages) else None
+    if 'synthetic' in args.stages:
+        report['synthetic'], curve = synthetic(args, templates, config, pool)
+        plot(curve, args.output_dir, args.shifts)
+    if 'e3' in args.stages and 'synthetic' in args.stages:
+        (args.output_dir / 'e3_e4_report.json').write_text(json.dumps(report, indent=2), encoding='utf-8')
+    if 'pitch' in args.stages:
+        report['pitch'] = pitch_sweep(args, templates, config, pool)
     print(json.dumps(report, indent=2))
 
 
