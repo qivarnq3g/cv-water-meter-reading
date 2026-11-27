@@ -19,6 +19,7 @@ from scipy.stats import binomtest
 from wmr.baseline import extract_cell, preprocess
 from wmr.dataset import load_image, read_split
 from wmr.proposed import WheelConfig, WheelReader, wheel_windows
+from wmr.roll import last_digit_roll, roll_tier
 
 ROOT = Path(__file__).resolve().parents[1]
 FIGURES = ROOT / "report" / "figures"
@@ -257,6 +258,170 @@ def figure_strip(data_root, out):
     return {"phase": phase, "score": score}
 
 
+def frozen_reader(**changes):
+    results = ROOT / "experiments" / "phuc" / "results"
+    templates = np.load(results / "templates.npy")
+    selected = json.loads((results / "selected.json").read_text(encoding="utf-8"))["config"]
+    values = dict(pitch=selected["pitch"], threshold=selected["threshold"], max_shift=selected["max_shift"])
+    values.update(changes)
+    return WheelReader(templates, WheelConfig(**values))
+
+
+def window_scores(reader, image):
+    cell = extract_cell(preprocess(image), 5, 4).astype(np.float32)
+    s = reader.config.max_shift
+    padded = cv2.copyMakeBorder(cell, 0, 0, s, s, cv2.BORDER_REPLICATE)
+    patches = np.stack([padded[:, x:x + cell.shape[1]].ravel() for x in range(2 * s + 1)])
+    patches -= patches.mean(axis=1, keepdims=True)
+    denom = reader.norms[:, None] * np.linalg.norm(patches, axis=1)[None, :]
+    scores = np.divide(reader.bank @ patches.T, denom, out=np.full(denom.shape, -1, np.float32), where=denom > 1e-8)
+    return cell, scores.max(axis=1)
+
+
+def e2_example(data_root):
+    readers = {s: frozen_reader(max_shift=s) for s in (2, 6)}
+    for sample in read_split(ROOT / "experiments" / "splits" / "dev_val.csv"):
+        if not sample.is_half_word:
+            continue
+        image = load_image(data_root, sample)
+        roll = last_digit_roll(image)
+        if roll_tier(roll) != "heavy":
+            continue
+        digit = sample.reading[-1]
+        if readers[2].read(image)[-1] != digit and readers[6].read(image)[-1] == digit                 and abs(readers[6].phase(image)[0] % 1 - roll / 2) < 0.1:
+            return sample, image
+    raise RuntimeError("no dev_val example found")
+
+
+def grid_accuracy(path):
+    with open(path, encoding="utf-8", newline="") as handle:
+        return {(int(r["pitch"]), int(r["max_shift"]), float(r["threshold"])): float(r["last_accuracy"])
+                for r in csv.DictReader(handle)}
+
+
+def figure_e2_params(data_root, grid_path, out):
+    sample, image = e2_example(data_root)
+    accuracy = grid_accuracy(grid_path)
+    truth = sample.reading[-1]
+    rows = [
+        ("Bán kính trượt ngang $s_x$", "max_shift", (2, 6, 10), lambda v: f"$s_x$ = {v}"),
+        ("Bước bánh xe $p$", "pitch", (54, 58, 62), lambda v: f"$p$ = {v}"),
+        ("Ngưỡng giải mã $t$", "threshold", (0.4, 0.5, 0.6), lambda v: f"$t$ = {comma(v, 1)}"),
+    ]
+    fig, axes = plt.subplots(3, 3, figsize=(10, 9.6))
+    for r, (name, key, values, label) in enumerate(rows):
+        for c, v in enumerate(values):
+            reader = frozen_reader(**{key: v})
+            cell, scores = window_scores(reader, image)
+            index = int(np.argmax(scores))
+            phase = reader.indices[index] / reader.config.pitch
+            digit = str(int(np.floor(phase + 1 - reader.config.threshold)) % 10)
+            cfg = reader.config
+            acc = accuracy[(cfg.pitch, cfg.max_shift, round(cfg.threshold, 1))]
+            pair = np.hstack([cell, np.full((cell.shape[0], 6), 255, np.float32), reader.windows[index]])
+            ax = axes[r, c]
+            ax.imshow(pair, cmap="gray", vmin=0, vmax=255)
+            verdict = "đúng" if digit == truth else "sai"
+            ax.set_title(f"{label(v)}\nr = {comma(phase)}, đọc {digit} ({verdict}), NCC = {comma(float(scores[index]))}\n"
+                         f"dev_val: {comma(acc * 100)}%", fontsize=10,
+                         color="#0b6e63" if digit == truth else "#c0392b")
+            ax.set_xticks([])
+            ax.set_yticks([])
+            for spine in ax.spines.values():
+                spine.set_visible(False)
+        axes[r, 0].set_ylabel(name, fontsize=11)
+    fig.tight_layout()
+    fig.savefig(out)
+    plt.close(fig)
+    return {"name": sample.name, "reading": sample.reading}
+
+
+def figure_pipeline(data_root, name, out):
+    sample = next(s for s in read_split(ROOT / "experiments" / "splits" / "dev_val.csv") if s.name == name)
+    image = load_image(data_root, sample)
+    reader = frozen_reader()
+    equalized = preprocess(image)
+    cell, scores = window_scores(reader, image)
+    index = int(np.argmax(scores))
+    r = reader.indices / reader.config.pitch
+    fig = plt.figure(figsize=(12, 6.2))
+    grid = fig.add_gridspec(2, 4, height_ratios=[1, 1.25], width_ratios=[1.6, 1.6, 0.55, 0.55], hspace=0.45, wspace=0.3)
+    a = fig.add_subplot(grid[0, 0])
+    a.imshow(image, cmap="gray", vmin=0, vmax=255)
+    a.set_title("(1) Ảnh vùng đọc, mức xám", fontsize=10)
+    a.axis("off")
+    b = fig.add_subplot(grid[0, 1])
+    b.imshow(equalized, cmap="gray", vmin=0, vmax=255)
+    b.set_title("(2) Cân bằng histogram, (3) chia năm ô", fontsize=10)
+    b.axis("off")
+    width = equalized.shape[1] // 5
+    for k in range(5):
+        b.add_patch(Rectangle((k * width - 0.5, -0.5), width, equalized.shape[0], fill=False,
+                              ec="#c47f4a" if k < 4 else "#c0392b", lw=1.5))
+    c = fig.add_subplot(grid[0, 2])
+    c.imshow(cell, cmap="gray", vmin=0, vmax=255)
+    c.set_title("Ô cuối", fontsize=10)
+    c.axis("off")
+    d = fig.add_subplot(grid[0, 3])
+    d.imshow(reader.windows[index], cmap="gray", vmin=0, vmax=255)
+    d.set_title("Cửa sổ khớp nhất", fontsize=10)
+    d.axis("off")
+    e = fig.add_subplot(grid[1, :])
+    e.plot(r, scores, color=COLORS["proposed"], lw=1.2)
+    e.axvline(r[index], color="#c0392b", ls=":", lw=1.2)
+    truth = int(sample.reading[-1])
+    e.axvspan(truth - 1 + reader.config.threshold, truth + reader.config.threshold, color="#0b6e63", alpha=0.1)
+    e.set_xlim(0, 10)
+    e.set_xticks(range(11))
+    e.set_xlabel("Vị trí cửa sổ trên dải r (đơn vị chữ số)")
+    e.set_ylabel("NCC lớn nhất theo trượt ngang")
+    e.yaxis.set_major_formatter(FuncFormatter(lambda v, _: comma(v, 1)))
+    e.set_title(f"(4) đến (6) NCC của ô cuối với {len(r)} cửa sổ trên dải; đỉnh tại r = {comma(r[index])}; "
+                f"vùng xanh là các r giải mã ra chữ số đúng {truth}", fontsize=10)
+    fig.savefig(out)
+    plt.close(fig)
+    return {"phase": float(r[index]), "score": float(scores[index])}
+
+
+def figure_e4_pitch(path, out):
+    with open(path, encoding="utf-8", newline="") as handle:
+        rows = list(csv.DictReader(handle))
+    mismatches = sorted({float(r["mismatch"]) for r in rows})
+    phases = sorted({float(r["phi"]) for r in rows})
+    value = {(float(r["mismatch"]), float(r["phi"])): r for r in rows}
+    fig, (left, right) = plt.subplots(1, 2, figsize=(11.5, 4.2), gridspec_kw={"width_ratios": [1.15, 1]})
+    shades = plt.cm.viridis(np.linspace(0.05, 0.85, len(phases)))
+    x = [m * 100 for m in mismatches]
+    for color, phi in zip(shades, phases):
+        left.plot(x, [float(value[(m, phi)]["proposed_reads_lower_or_next"]) * 100 for m in mismatches], "-o",
+                  color=color, ms=4, lw=1.6, label=f"φ = {comma(phi, 1)}")
+    left.axhline(50, color="#c0392b", lw=1, ls=":")
+    left.set_xlabel("Lệch bước thật so với p = 58 (%)")
+    left.set_ylabel("Đọc ra d hoặc d + 1 (%)")
+    left.set_ylim(30, 80)
+    percent_axis(left.yaxis)
+    left.legend(frameon=False, fontsize=9, ncol=3, loc="lower center")
+    left.set_title("(a) Tỉ lệ đọc đúng một trong hai chữ số")
+    grid = np.array([[float(value[(m, phi)]["proposed_phase_median"]) for m in mismatches] for phi in phases])
+    image = right.imshow(grid, origin="lower", cmap="magma_r", vmin=0, vmax=1.2, aspect="auto")
+    for i in range(len(phases)):
+        for j in range(len(mismatches)):
+            right.text(j, i, comma(grid[i, j]), ha="center", va="center", fontsize=7.5,
+                       color="white" if grid[i, j] > 0.6 else "black")
+    right.set_xticks(range(len(mismatches)), [f"{m * 100:+.0f}" for m in mismatches])
+    right.set_yticks(range(len(phases)), [comma(p, 1) for p in phases])
+    right.set_xlabel("Lệch bước thật so với p = 58 (%)")
+    right.set_ylabel("Pha lăn φ")
+    right.set_title("(b) Trung vị sai số pha (chữ số)")
+    for spine in right.spines.values():
+        spine.set_visible(False)
+    bar = fig.colorbar(image, ax=right, shrink=0.85, pad=0.02)
+    bar.ax.yaxis.set_major_formatter(FuncFormatter(lambda v, _: comma(v, 1)))
+    fig.tight_layout()
+    fig.savefig(out)
+    plt.close(fig)
+
+
 def main():
     parser = argparse.ArgumentParser(description="Build report figures and statistics from saved experiment results.")
     parser.add_argument("--data-root", default=os.environ.get("WMR_DATA_ROOT", "data"))
@@ -270,8 +435,11 @@ def main():
     figure_e2(ROOT / "experiments" / "phuc" / "results" / "e2_grid.csv", FIGURES / "fig-e2.png")
     figure_e4(ROOT / "experiments" / "quang" / "results" / "e4_curve.csv", FIGURES / "fig-e4.png")
     stats["strip_example"] = figure_strip(data_root, FIGURES / "fig-strip.png")
+    example = figure_e2_params(data_root, ROOT / "experiments" / "phuc" / "results" / "e2_grid.csv", FIGURES / "fig-e2-params.png")
+    stats["e2_example"] = example | figure_pipeline(data_root, example["name"], FIGURES / "fig-pipeline.png")
+    figure_e4_pitch(ROOT / "experiments" / "quang" / "results" / "e4_pitch_curve.csv", FIGURES / "fig-e4-pitch.png")
     (ROOT / "report" / "stats.json").write_text(json.dumps(stats, indent=2, ensure_ascii=False), encoding="utf-8")
-    print(json.dumps({g: {m: round(v["accuracy"] * 100, 2) for m, v in e.items() if isinstance(v, dict) and "accuracy" in v} | {"paired": e["paired"]} for g, e in stats.items() if g != "strip_example"}, indent=1, ensure_ascii=False))
+    print(json.dumps({g: {m: round(v["accuracy"] * 100, 2) for m, v in e.items() if isinstance(v, dict) and "accuracy" in v} | {"paired": e["paired"]} for g, e in stats.items() if g not in ("strip_example", "e2_example")}, indent=1, ensure_ascii=False))
 
 
 if __name__ == "__main__":

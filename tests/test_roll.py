@@ -67,3 +67,31 @@ def test_score_is_in_unit_interval():
     rng = np.random.default_rng(0)
     image = rng.integers(0, 256, size=(60, 200), dtype=np.uint8)
     assert 0.0 <= last_digit_roll(image, RollConfig()) <= 1.0
+
+
+def stacked_cells():
+    rng = np.random.default_rng(5)
+    return [rng.uniform(0, 255, (60, 40)).astype(np.float32) for _ in range(3)]
+
+
+def test_rolled_window_at_native_period_matches_cells():
+    from wmr.roll import rolled_window
+    above, middle, below = stacked_cells()
+    np.testing.assert_array_equal(rolled_window([above, middle, below], 60, 0.0), middle)
+    half = rolled_window([above, middle, below], 60, 0.5)
+    np.testing.assert_array_equal(half[:30], middle[30:])
+    np.testing.assert_array_equal(half[30:], below[:30])
+
+
+def test_rolled_window_centres_resized_digit():
+    from wmr.roll import rolled_window
+    cells = stacked_cells()
+    stack = cv2.resize(np.vstack(cells), (40, 216), interpolation=cv2.INTER_LINEAR)
+    np.testing.assert_array_equal(rolled_window(cells, 72, 0.0), stack[78:138])
+    np.testing.assert_array_equal(rolled_window(cells, 72, 0.25), stack[96:156])
+
+
+def test_rolled_window_rejects_window_outside_stack():
+    from wmr.roll import rolled_window
+    with pytest.raises(ValueError):
+        rolled_window(stacked_cells(), 20, 0.5)

@@ -1,0 +1,46 @@
+{
+  "triples": 165,
+  "break_level": 0.5,
+  "worst_phase_by_mismatch": {
+    "-0.2": {
+      "min_rate": 0.48484848484848486,
+      "phi_at_min": 0.2
+    },
+    "-0.15": {
+      "min_rate": 0.5212121212121212,
+      "phi_at_min": 0.1
+    },
+    "-0.1": {
+      "min_rate": 0.5575757575757576,
+      "phi_at_min": 0.0
+    },
+    "-0.05": {
+      "min_rate": 0.5575757575757576,
+      "phi_at_min": 0.5
+    },
+    "0.0": {
+      "min_rate": 0.5333333333333333,
+      "phi_at_min": 0.5
+    },
+    "0.05": {
+      "min_rate": 0.509090909090909,
+      "phi_at_min": 0.5
+    },
+    "0.1": {
+      "min_rate": 0.5151515151515151,
+      "phi_at_min": 0.4
+    },
+    "0.15": {
+      "min_rate": 0.4909090909090909,
+      "phi_at_min": 0.4
+    },
+    "0.2": {
+      "min_rate": 0.43636363636363634,
+      "phi_at_min": 0.5
+    }
+  },
+  "first_mismatch_below_break_level": {
+    "shorter": -0.2,
+    "longer": 0.15
+  }
+}
